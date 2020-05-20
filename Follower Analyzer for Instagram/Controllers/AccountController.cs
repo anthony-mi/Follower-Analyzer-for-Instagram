@@ -9,12 +9,19 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Follower_Analyzer_for_Instagram.Models;
+using Follower_Analyzer_for_Instagram.Models.DBInfrastructure;
 
 namespace Follower_Analyzer_for_Instagram.Controllers
 {
     [Authorize]
     public class AccountController : Controller
     {
+        IRepository repository;
+        public AccountController(IRepository repo)
+        {
+            repository = repo;
+        }
+
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Follower_Analyzer_for_Instagram.Models.DBInfrastructure;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,6 +9,11 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 {
     public class HomeController : Controller
     {
+        IRepository repository;
+        public HomeController(IRepository repo)
+        {
+            repository = repo;
+        }
         public ActionResult Index()
         {
             return View();
