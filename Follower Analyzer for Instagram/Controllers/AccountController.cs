@@ -10,16 +10,20 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Follower_Analyzer_for_Instagram.Models;
 using Follower_Analyzer_for_Instagram.Models.DBInfrastructure;
+using Follower_Analyzer_for_Instagram.Services.InstagramAPI;
 
 namespace Follower_Analyzer_for_Instagram.Controllers
 {
     [Authorize]
     public class AccountController : Controller
     {
-        IRepository repository;
+        private IRepository _repository;
+        private FollowerAnalyzerDbContext _followerAnalyzerDbContext;
+
         public AccountController(IRepository repo)
         {
-            repository = repo;
+            _repository = repo;
+            _followerAnalyzerDbContext = new FollowerAnalyzerDbContext();
         }
 
         private ApplicationSignInManager _signInManager;
@@ -80,21 +84,46 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 return View(model);
             }
 
-            // This doesn't count login failures towards account lockout
-            // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
-            switch (result)
+            byte[] instagramUserCookies = null;
+
+            InstagramAPI api = new InstagramAPI();
+            bool authenticated = api.TryAuthenticate(model.Username, model.Password, out instagramUserCookies);
+
+            if(authenticated)
             {
-                case SignInStatus.Success:
-                    return RedirectToLocal(returnUrl);
-                case SignInStatus.LockedOut:
-                    return View("Lockout");
-                case SignInStatus.RequiresVerification:
-                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
-                case SignInStatus.Failure:
-                default:
-                    ModelState.AddModelError("", "Invalid login attempt.");
+                ApplicationUser newUser = new ApplicationUser();
+                string primaryKey = api.GetCurrentUserPrimaryKey();
+                
+                if(string.IsNullOrEmpty(primaryKey))
+                {
+                    ModelState.AddModelError("", "Authentication error. Try later.");
                     return View(model);
+                }
+
+                // TODO: initialize user properties
+                newUser.InstagramPK = primaryKey;
+                newUser.StateData = instagramUserCookies;
+
+                ApplicationUser foundUser = 
+                    _followerAnalyzerDbContext.Users.FirstOrDefault(u => u.InstagramPK == primaryKey);
+
+                if(foundUser != default(ApplicationUser))
+                {
+                    _followerAnalyzerDbContext.Users.Add(newUser);
+                }
+                else
+                {
+                    foundUser.StateData = instagramUserCookies;
+                }
+
+                _followerAnalyzerDbContext.SaveChangesAsync();
+
+                return RedirectToLocal(returnUrl);
+            }
+            else
+            {
+                ModelState.AddModelError("", "Invalid login attempt.");
+                return View(model);
             }
         }
 
@@ -488,5 +517,10 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             }
         }
         #endregion
+
+        ~AccountController()
+        {
+            _followerAnalyzerDbContext?.Dispose();
+        }
     }
 }
