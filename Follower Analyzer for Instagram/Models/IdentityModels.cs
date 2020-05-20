@@ -42,8 +42,13 @@ namespace Follower_Analyzer_for_Instagram.Models
 
     public class FollowerAnalyzerDbContext : IdentityDbContext<ApplicationUser>
     {
+        //public FollowerAnalyzerDbContext()
+        //    : base("FollowerAnalyzerConnection", throwIfV1Schema: false)
+        //{
+        //}
+
         public FollowerAnalyzerDbContext()
-            : base("FollowerAnalyzerConnection", throwIfV1Schema: false)
+            : base("FollowerAnalyzerExpressConnection", throwIfV1Schema: false)
         {
         }
 
