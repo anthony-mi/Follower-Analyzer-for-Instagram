@@ -192,9 +192,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\AutofacConfig.cs" />
-    <Compile Include="Migrations\202005210723106_Initialization_Migration.cs" />
-    <Compile Include="Migrations\202005210723106_Initialization_Migration.Designer.cs">
-      <DependentUpon>202005210723106_Initialization_Migration.cs</DependentUpon>
+    <Compile Include="Migrations\202005210740546_InitialisationMigration.cs" />
+    <Compile Include="Migrations\202005210740546_InitialisationMigration.Designer.cs">
+      <DependentUpon>202005210740546_InitialisationMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -203,6 +203,7 @@
     <Compile Include="Models\FollowerAnalyzerContext.cs" />
     <Compile Include="Models\InstagramPost.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Models\ViewModel\PostViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\InstagramAPI\IInstagramAPI.cs" />
     <Compile Include="Services\InstagramAPI\InstagramAPI.cs" />
@@ -354,7 +355,6 @@
     <Content Include="Scripts\popper.js.map" />
     <Content Include="Scripts\popper-utils.min.js.map" />
     <Content Include="Scripts\popper-utils.js.map" />
-    <Content Include="Views\Home\ListPosts.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -371,8 +371,8 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202005210723106_Initialization_Migration.resx">
-      <DependentUpon>202005210723106_Initialization_Migration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202005210740546_InitialisationMigration.resx">
+      <DependentUpon>202005210740546_InitialisationMigration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
