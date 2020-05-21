@@ -192,11 +192,18 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\AutofacConfig.cs" />
+    <Compile Include="Migrations\202005210740546_InitialisationMigration.cs" />
+    <Compile Include="Migrations\202005210740546_InitialisationMigration.Designer.cs">
+      <DependentUpon>202005210740546_InitialisationMigration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\DBInfrastructure\FollowerAnalyzerRepository.cs" />
     <Compile Include="Models\DBInfrastructure\IRepository.cs" />
     <Compile Include="Models\FollowerAnalyzerContext.cs" />
+    <Compile Include="Models\InstagramPost.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Models\ViewModel\PostViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\InstagramAPI\IInstagramAPI.cs" />
     <Compile Include="Services\InstagramAPI\InstagramAPI.cs" />
@@ -360,6 +367,11 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202005210740546_InitialisationMigration.resx">
+      <DependentUpon>202005210740546_InitialisationMigration.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
