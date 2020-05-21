@@ -19,11 +19,13 @@ namespace Follower_Analyzer_for_Instagram.Controllers
     {
         private IRepository _repository;
         private FollowerAnalyzerDbContext _followerAnalyzerDbContext;
+        IInstagramAPI _instagramAPI;
 
-        public AccountController(IRepository repo)
+        public AccountController(IRepository repo, IInstagramAPI instagramAPI)
         {
             _repository = repo;
             _followerAnalyzerDbContext = new FollowerAnalyzerDbContext();
+            _instagramAPI = instagramAPI;
         }
 
         private ApplicationSignInManager _signInManager;
@@ -103,13 +105,17 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 // TODO: initialize user properties
                 newUser.InstagramPK = primaryKey;
                 newUser.StateData = instagramUserCookies;
+                
 
                 ApplicationUser foundUser = 
                     _followerAnalyzerDbContext.Users.FirstOrDefault(u => u.InstagramPK == primaryKey);
 
-                if(foundUser != default(ApplicationUser))
+                if(foundUser == default(ApplicationUser))
                 {
+                    newUser.LastUpdateDate = DateTime.Now;
+
                     _followerAnalyzerDbContext.Users.Add(newUser);
+                    
                 }
                 else
                 {
