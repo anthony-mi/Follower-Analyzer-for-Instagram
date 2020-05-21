@@ -1,43 +1,36 @@
 ﻿@using Follower_Analyzer_for_Instagram.Models
 @model LoginViewModel
 @{
-    ViewBag.Title = "Log in";
+    ViewBag.Title = "Login";
 }
 
-<div class="row">
-    <div class="col-sm-6 bg"></div>
-    @*<section id="loginForm">*@
-    @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "col-sm-6", role = "form" }))
+<div class="container mt-5">
+    @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "col-sm-8 col-md-6 center-block mx-auto", role = "form" }))
     {
         @Html.AntiForgeryToken()
         <div class="form-group">
-            <h2>@ViewBag.Title</h2>
-            <h4>Use a local account to log in.</h4>
-            <hr />
+            <div class="text-center mb-5">
+                <img src="~/Content/Images/big-logo.png" />
+            </div>
+            <h3 class="text-center font-weight-bold">@ViewBag.Title</h3>
+            <h6 class="text-center pt-2 mb-5">Welcome back.</h6>
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <div class="form-group">
-                @Html.LabelFor(m => m.Username, new { @class = "col-md-2 control-label" })
-                <div class="col-md-10">
-                    @Html.TextBoxFor(m => m.Username, new { @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.Username, "", new { @class = "text-danger" })
-                </div>
+                @Html.LabelFor(m => m.Username, new { @class = "control-label" })
+                @Html.TextBoxFor(m => m.Username, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Username, "", new { @class = "text-danger" })
             </div>
             <div class="form-group">
-                @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
-                <div class="col-md-10">
-                    @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-                </div>
+                @Html.LabelFor(m => m.Password, new { @class = "control-label" })
+                @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
             </div>
             <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Log in" class="btn btn-default" />
-                </div>
+                <input type="submit" value="Login" class="btn btn-dark btn-block btn-lg px-sm-2 my-4" />
             </div>
         </div>
     }
 </div>
-
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
