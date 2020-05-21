@@ -18,12 +18,12 @@ namespace Follower_Analyzer_for_Instagram.Controllers
     public class AccountController : Controller
     {
         private IRepository _repository;
-        private FollowerAnalyzerContext _followerAnalyzerDbContext;
+        private IInstagramAPI _instagramAPI;
 
-        public AccountController(IRepository repo)
+        public AccountController(IRepository repo, IInstagramAPI instagramAPI)
         {
             _repository = repo;
-            _followerAnalyzerDbContext = new FollowerAnalyzerContext();
+            _instagramAPI = instagramAPI;
         }
 
         public AccountController()
@@ -53,13 +53,12 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
             byte[] instagramUserCookies = null;
 
-            InstagramAPI api = new InstagramAPI();
-            bool authenticated = api.TryAuthenticate(model.Username, model.Password, out instagramUserCookies);
+            bool authenticated = _instagramAPI.TryAuthenticate(model.Username, model.Password, out instagramUserCookies);
 
             if(authenticated)
             {
                 User newUser = new User();
-                string primaryKey = api.GetCurrentUserPrimaryKey();
+                string primaryKey = _instagramAPI.GetCurrentUserPrimaryKey();
                 
                 if(string.IsNullOrEmpty(primaryKey))
                 {
@@ -71,21 +70,17 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 newUser.InstagramPK = primaryKey;
                 newUser.StateData = instagramUserCookies;
 
-                User foundUser = 
-                    _followerAnalyzerDbContext.Users.FirstOrDefault(u => u.InstagramPK == primaryKey);
+                User foundUser = await _repository.GetAsync<User>(u => u.InstagramPK == primaryKey);
 
-                if(foundUser != default(User))
+                if(foundUser == null)
                 {
                     newUser.LastUpdateDate = DateTime.Now;
-
-                    _followerAnalyzerDbContext.Users.Add(newUser);
+                    await _repository.CreateAsync<User>(newUser);
                 }
                 else
                 {
                     foundUser.StateData = instagramUserCookies;
                 }
-
-                await _followerAnalyzerDbContext.SaveChangesAsync();
 
                 return RedirectToLocal(returnUrl);
             }
@@ -132,10 +127,5 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             return RedirectToAction("Index", "Home");
         }
         #endregion
-
-        ~AccountController()
-        {
-            _followerAnalyzerDbContext?.Dispose();
-        }
     }
 }

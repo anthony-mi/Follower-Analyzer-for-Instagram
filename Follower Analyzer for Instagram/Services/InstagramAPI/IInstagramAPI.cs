@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Follower_Analyzer_for_Instagram.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,5 +11,7 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
     {
         bool TryAuthenticate(string username, string password, out byte[] instagramUserCookies);
         string GetCurrentUserPrimaryKey();
+        List<InstagramPost> GetUserPostByUsername(string username);
+        List<InstagramPost> GetUserPostByPrimaryKey(string primaryKey);
     }
 }
