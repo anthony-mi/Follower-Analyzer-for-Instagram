@@ -10,10 +10,10 @@ namespace Follower_Analyzer_for_Instagram.Models.DBInfrastructure
 {
     public class FollowerAnalyzerRepository : IRepository, IDisposable
     {
-        FollowerAnalyzerDbContext context;
+        FollowerAnalyzerContext context;
         public FollowerAnalyzerRepository()
         {
-            context = new FollowerAnalyzerDbContext();
+            context = new FollowerAnalyzerContext();
         }
         public async Task<bool> CreateAsync<TEntity>(TEntity entity) where TEntity : class
         {

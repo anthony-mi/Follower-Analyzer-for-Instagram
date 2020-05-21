@@ -22,3 +22,13 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.bg {
+    background-image: url("Images/register.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+}
