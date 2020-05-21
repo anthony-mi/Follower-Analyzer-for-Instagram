@@ -1,4 +1,5 @@
-﻿using Follower_Analyzer_for_Instagram.Models.DBInfrastructure;
+﻿using Follower_Analyzer_for_Instagram.Models;
+using Follower_Analyzer_for_Instagram.Models.DBInfrastructure;
 using Follower_Analyzer_for_Instagram.Services.InstagramAPI;
 using System;
 using System.Collections.Generic;
@@ -11,9 +12,11 @@ namespace Follower_Analyzer_for_Instagram.Controllers
     public class HomeController : Controller
     {
         IRepository repository;
-        public HomeController(IRepository repo)
+        private IInstagramAPI instaApi;
+        public HomeController(IRepository repo, IInstagramAPI instaApi)
         {
             repository = repo;
+            this.instaApi = instaApi;
         }
 
         public ActionResult Index()
@@ -28,37 +31,50 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             return View();
         }
 
-        public ActionResult TopTenTikes(string UserName)
+        public ActionResult TopTenLikes(string userName)
         {
+            var posts = instaApi.GetUserPostByUsername(userName);
+            var sortPosts = from post in posts orderby post.CountOfLikes select post;
+            ICollection<InstagramPost> topTenPosts = new List<InstagramPost>();
+            int counter = 0;
 
+            foreach (InstagramPost post in sortPosts)
+            {
+                if (post != null)
+                {
+                    topTenPosts.Add(post);
+                }
 
+                if (counter == 10)
+                {
+                    break;
+                }
 
-
-            return View();
+            }
+            return View("ListPosts", topTenPosts);
         }
 
-        public ActionResult TopTenByComments(string UserName)
+        public ActionResult TopTenByComments(string userName)
         {
-            InstagramAPI InstaApi = new InstagramAPI();
-        //  var userInfo = InstaApi.UserProcessor.GetUserInfoByUsername(UserName);
+            var posts = instaApi.GetUserPostByUsername(userName);
+            var sortPosts = from post in posts orderby post.CountOfComments select post;
+            ICollection<InstagramPost> topTenPosts = new List<InstagramPost>();
+            int counter = 0;
 
-            return View();
-        }
+            foreach (InstagramPost post in sortPosts)
+            {
+                if (post != null)
+                {
+                    topTenPosts.Add(post);
+                }
 
-        public ActionResult TopTenTikes(string UserName)
-        {
+                if (counter == 10)
+                {
+                    break;
+                }
 
-
-
-
-            return View();
-        }
-
-        public ActionResult TopTenByComments(string UserName)
-        {
-       
-
-            return View();
+            }
+            return View("ListPosts", topTenPosts);
         }
 
         public ActionResult Contact()
