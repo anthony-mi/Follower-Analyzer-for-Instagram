@@ -1,4 +1,5 @@
-﻿using InstagramApiSharp.API;
+﻿using Follower_Analyzer_for_Instagram.Models;
+using InstagramApiSharp.API;
 using InstagramApiSharp.API.Builder;
 using InstagramApiSharp.Classes;
 using InstagramApiSharp.Classes.Models;
@@ -115,6 +116,16 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
             //delay.Enable();
 
             return logInTask.Result;
+        }
+
+        public List<InstagramPost> GetUserPostByUsername(string username)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<InstagramPost> GetUserPostByPrimaryKey(string primaryKey)
+        {
+            throw new NotImplementedException();
         }
     }
 }
