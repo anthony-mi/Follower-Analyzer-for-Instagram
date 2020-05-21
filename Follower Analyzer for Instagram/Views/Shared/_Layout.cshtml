@@ -10,21 +10,32 @@
 </head>
 <body>
     <div id="mainNavbar" class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
-        <a class="navbar-brand" href="/Home/Index">
-            <img src="~/Content/Images/logo.png" />
-        </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        @if ((string)HttpContext.Current.Session["Login"] != null)
+        {
+            <a class="navbar-brand ml-3" href="/Home/Index">
+                <img src="~/Content/Images/logo.png" />
+            </a>
+        }
+        else
+        {
+            <a class="navbar-brand ml-3" href="/Account/Login">
+                <img src="~/Content/Images/logo.png" />
+            </a>
+        }
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="navbar-collapse collapse" id="navbarSupportedContent">
+        <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav mr-auto">
-                <li class="nav-item active"><a href="/Home/Index" class="nav-link mr-3"><i class="fa fa-home fa-fw" aria-hidden="true"></i>&nbsp;Home</a></li>
+                @if ((string)HttpContext.Current.Session["Login"] != null)
+                {
+                    <li class="nav-item active">@Html.ActionLink("Home", "Index", "Home", null, new { @class = "nav-link mr-3" })</li>
+                }
                 <li class="nav-item">@Html.ActionLink("About", "About", "Home", null, new { @class = "nav-link mr-3" })</li>
-                <li class="nav-item">@Html.ActionLink("Contact", "Contact", "Home", null, new { @class = "nav-link mr-3" })</li>
-                <li>@Html.ActionLink("Log in", "Login", "Account", null, new { @class = "nav-link mr-3" })</li>
-                @*@Html.Partial("_LoginPartial")*@
             </ul>
+            @Html.Partial("_LoginPartial")
         </div>
     </div>
     <div>
