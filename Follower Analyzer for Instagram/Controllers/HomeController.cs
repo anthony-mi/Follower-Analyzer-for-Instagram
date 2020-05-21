@@ -33,7 +33,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         {
             var posts = instaApi.GetUserPostByUsername(userName);
             var sortPosts = from post in posts orderby post.CountOfLikes select post;
-            ICollection<InstagramPost> topTenPosts = new List<InstagramPost>();
+            var topTenPosts = new List<InstagramPost>();
             int counter = 0;
 
             foreach (InstagramPost post in sortPosts)
@@ -56,7 +56,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         {
             var posts = instaApi.GetUserPostByUsername(userName);
             var sortPosts = from post in posts orderby post.CountOfComments select post;
-            ICollection<InstagramPost> topTenPosts = new List<InstagramPost>();
+            var topTenPosts = new List<InstagramPost>();
             int counter = 0;
 
             foreach (InstagramPost post in sortPosts)
