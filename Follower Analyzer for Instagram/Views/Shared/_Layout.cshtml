@@ -21,7 +21,8 @@
                 <li><a href="/Home/Index" class="nav-link mr-3"><i class="fa fa-home fa-fw" aria-hidden="true"></i>&nbsp;Home</a></li>
                 <li>@Html.ActionLink("About", "About", "Home", null, new { @class = "nav-link mr-3" })</li>
                 <li>@Html.ActionLink("Contact", "Contact", "Home", null, new { @class = "nav-link mr-3" })</li>
-                @Html.Partial("_LoginPartial")
+                <li>@Html.ActionLink("Log in", "Login", "Account", null, new { @class = "nav-link mr-3" })</li>
+                @*@Html.Partial("_LoginPartial")*@
             </ul>
         </div>
     </div>
