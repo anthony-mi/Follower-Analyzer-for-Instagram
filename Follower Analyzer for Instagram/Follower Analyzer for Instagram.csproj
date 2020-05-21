@@ -201,6 +201,7 @@
     <Compile Include="Models\DBInfrastructure\FollowerAnalyzerRepository.cs" />
     <Compile Include="Models\DBInfrastructure\IRepository.cs" />
     <Compile Include="Models\FollowerAnalyzerContext.cs" />
+    <Compile Include="Models\InstagramPost.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\ViewModel\PostViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

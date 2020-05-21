@@ -1,4 +1,6 @@
-﻿using Microsoft.Owin;
+﻿using Follower_Analyzer_for_Instagram.Models;
+using Microsoft.Ajax.Utilities;
+using Microsoft.Owin;
 using Owin;
 
 [assembly: OwinStartupAttribute(typeof(Follower_Analyzer_for_Instagram.Startup))]
