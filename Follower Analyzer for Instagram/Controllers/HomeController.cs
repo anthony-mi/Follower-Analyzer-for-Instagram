@@ -49,7 +49,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 {
                     break;
                 }
-
+                counter++;
             }
             return View("ListPosts", topTenPosts);
         }
@@ -72,7 +72,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 {
                     break;
                 }
-
+                counter++;
             }
             return View("ListPosts", topTenPosts);
         }
