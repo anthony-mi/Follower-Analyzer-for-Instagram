@@ -16,21 +16,21 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="navbar-collapse collapse" id="navbarSupportedContent">
-            <ul class="nav navbar-nav">
-                <li><a href="/Home/Index" class="nav-link mr-3"><i class="fa fa-home fa-fw" aria-hidden="true"></i>&nbsp;Home</a></li>
-                <li>@Html.ActionLink("About", "About", "Home", null, new { @class = "nav-link mr-3" })</li>
-                <li>@Html.ActionLink("Contact", "Contact", "Home", null, new { @class = "nav-link mr-3" })</li>
+            <ul class="nav navbar-nav mr-auto">
+                <li class="nav-item active"><a href="/Home/Index" class="nav-link mr-3"><i class="fa fa-home fa-fw" aria-hidden="true"></i>&nbsp;Home</a></li>
+                <li class="nav-item">@Html.ActionLink("About", "About", "Home", null, new { @class = "nav-link mr-3" })</li>
+                <li class="nav-item">@Html.ActionLink("Contact", "Contact", "Home", null, new { @class = "nav-link mr-3" })</li>
                 <li>@Html.ActionLink("Log in", "Login", "Account", null, new { @class = "nav-link mr-3" })</li>
                 @*@Html.Partial("_LoginPartial")*@
             </ul>
         </div>
     </div>
-    <div class="container body-content mt-5">
+    <div>
         @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - Follower Analizer Application</p>
+        <footer class="fixed-bottom">
+            <p class="text-center">&copy; @DateTime.Now.Year - Follower Analizer Application</p>
         </footer>
     </div>
 

@@ -23,7 +23,7 @@ namespace Follower_Analyzer_for_Instagram
                       "~/Scripts/bootstrap.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                      "~/Content/bootstrap.css",
+                      "~/Content/bootstrap-sandstone.min.css",
                       "~/Content/site.css"));
         }
     }
