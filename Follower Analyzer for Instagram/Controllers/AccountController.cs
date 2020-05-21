@@ -18,49 +18,16 @@ namespace Follower_Analyzer_for_Instagram.Controllers
     public class AccountController : Controller
     {
         private IRepository _repository;
-        private FollowerAnalyzerDbContext _followerAnalyzerDbContext;
+        private FollowerAnalyzerContext _followerAnalyzerDbContext;
 
         public AccountController(IRepository repo)
         {
             _repository = repo;
-            _followerAnalyzerDbContext = new FollowerAnalyzerDbContext();
+            _followerAnalyzerDbContext = new FollowerAnalyzerContext();
         }
-
-        private ApplicationSignInManager _signInManager;
-        private ApplicationUserManager _userManager;
 
         public AccountController()
         {
-        }
-
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
-        {
-            UserManager = userManager;
-            SignInManager = signInManager;
-        }
-
-        public ApplicationSignInManager SignInManager
-        {
-            get
-            {
-                return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
-            }
-            private set 
-            { 
-                _signInManager = value; 
-            }
-        }
-
-        public ApplicationUserManager UserManager
-        {
-            get
-            {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            }
-            private set
-            {
-                _userManager = value;
-            }
         }
 
         //
@@ -91,7 +58,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
             if(authenticated)
             {
-                ApplicationUser newUser = new ApplicationUser();
+                User newUser = new User();
                 string primaryKey = api.GetCurrentUserPrimaryKey();
                 
                 if(string.IsNullOrEmpty(primaryKey))
@@ -104,10 +71,10 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 newUser.InstagramPK = primaryKey;
                 newUser.StateData = instagramUserCookies;
 
-                ApplicationUser foundUser = 
+                User foundUser = 
                     _followerAnalyzerDbContext.Users.FirstOrDefault(u => u.InstagramPK == primaryKey);
 
-                if(foundUser != default(ApplicationUser))
+                if(foundUser != default(User))
                 {
                     _followerAnalyzerDbContext.Users.Add(newUser);
                 }
