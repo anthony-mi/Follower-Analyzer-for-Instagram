@@ -76,6 +76,8 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
                 if(foundUser != default(User))
                 {
+                    newUser.LastUpdateDate = DateTime.Now;
+
                     _followerAnalyzerDbContext.Users.Add(newUser);
                 }
                 else
