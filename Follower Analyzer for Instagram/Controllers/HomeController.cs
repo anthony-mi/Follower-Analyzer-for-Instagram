@@ -45,6 +45,22 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             return View();
         }
 
+        public ActionResult TopTenTikes(string UserName)
+        {
+
+
+
+
+            return View();
+        }
+
+        public ActionResult TopTenByComments(string UserName)
+        {
+       
+
+            return View();
+        }
+
         public ActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";
