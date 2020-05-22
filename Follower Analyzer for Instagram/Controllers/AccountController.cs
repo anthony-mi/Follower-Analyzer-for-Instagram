@@ -82,7 +82,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 {
                     foundUser.StateData = instagramUserCookies;
                 }
-                Session["Login"] = model.Username;
+                Session["PrimaryKey"] = primaryKey;
                 return RedirectToLocal(returnUrl);
             }
             else
