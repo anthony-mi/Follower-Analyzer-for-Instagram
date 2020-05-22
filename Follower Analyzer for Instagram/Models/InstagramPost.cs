@@ -13,6 +13,6 @@ namespace Follower_Analyzer_for_Instagram.Models
         public List<User> Likers { get; set; }
         public int CountOfComments { get; set; }
         public List<User> Commenters { get; set; }
-        public byte[] MediaFile { get; set; }
+        public string MediaFileUri { get; set; }
     }
 }
