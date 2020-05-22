@@ -11,6 +11,7 @@ using Microsoft.Owin.Security;
 using Follower_Analyzer_for_Instagram.Models;
 using Follower_Analyzer_for_Instagram.Models.DBInfrastructure;
 using Follower_Analyzer_for_Instagram.Services.InstagramAPI;
+using System.Web.Security;
 
 namespace Follower_Analyzer_for_Instagram.Controllers
 {
@@ -81,7 +82,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 {
                     foundUser.StateData = instagramUserCookies;
                 }
-
+                Session["PrimaryKey"] = primaryKey;
                 return RedirectToLocal(returnUrl);
             }
             else
@@ -92,23 +93,16 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         }
 
         //
-        // POST: /Account/LogOff
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult LogOff()
+        // GET: /Account/LogOff
+        [HttpGet]
+        public ActionResult Logout()
         {
-            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            Session.Abandon();
+
             return RedirectToAction("Index", "Home");
         }
 
         #region Helpers
-        private IAuthenticationManager AuthenticationManager
-        {
-            get
-            {
-                return HttpContext.GetOwinContext().Authentication;
-            }
-        }
 
         private void AddErrors(IdentityResult result)
         {

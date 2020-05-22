@@ -11,7 +11,7 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
     {
         bool TryAuthenticate(string username, string password, out byte[] instagramUserCookies);
         string GetCurrentUserPrimaryKey();
-        List<InstagramPost> GetUserPostByUsername(string username);
-        List<InstagramPost> GetUserPostByPrimaryKey(string primaryKey);
+        List<InstagramPost> GetUserPostsByUsername(string username, byte[] instagramCookies);
+        List<InstagramPost> GetUserPostsByPrimaryKey(string primaryKey, byte[] instagramCookies);
     }
 }

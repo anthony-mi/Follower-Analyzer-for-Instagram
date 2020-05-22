@@ -1,4 +1,5 @@
 ﻿using Follower_Analyzer_for_Instagram.Models;
+using InstagramApiSharp;
 using InstagramApiSharp.API;
 using InstagramApiSharp.API.Builder;
 using InstagramApiSharp.Classes;
@@ -17,32 +18,14 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
     {
         private IInstaApi _instaApi = null;
 
+        private readonly int REQUEST_DELAY_MIN = 2;
+        private readonly int REQUEST_DELAY_MAX = 20;
+
         public bool TryAuthenticate(string username, string password, out byte[] instagramUserCookies)
         {
             bool isAuthenticated = false;
 
-            _instaApi = CreateInstaApi(username, password, 2, 20);
-
-            //const string stateFile = "state.bin";
-            //try
-            //{
-            //    if (File.Exists(stateFile))
-            //    {
-            //        Console.WriteLine("Loading state from file");
-            //        using (var fs = File.OpenRead(stateFile))
-            //        {
-            //            InstaApi.LoadStateDataFromStream(fs);
-            //            // in .net core or uwp apps don't use LoadStateDataFromStream
-            //            // use this one:
-            //            // _instaApi.LoadStateDataFromString(new StreamReader(fs).ReadToEnd());
-            //            // you should pass json string as parameter to this function.
-            //        }
-            //    }
-            //}
-            //catch (Exception e)
-            //{
-            //    Console.WriteLine(e);
-            //}
+            _instaApi = CreateInstaApi(username, password, REQUEST_DELAY_MIN, REQUEST_DELAY_MAX);
 
             IResult<InstaLoginResult> logInResult = TryLogIn(_instaApi);
 
@@ -96,6 +79,19 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
                 .Build();
         }
 
+        private static IInstaApi CreateInstaApi(byte[] cookies, int requestDelayMin, int requestDelayMax)
+        {
+            IRequestDelay delay = RequestDelay.FromSeconds(requestDelayMin, requestDelayMax);
+
+            var instaAPI = InstaApiBuilder.CreateBuilder()
+                .SetRequestDelay(delay)
+                .Build();
+
+            instaAPI.LoadStateDataFromStream(new MemoryStream(cookies));
+
+            return instaAPI;
+        }
+
         private static byte[] ConvertStreamToByteArray(Stream stream)
         {
             byte[] result = new byte[] { };
@@ -110,20 +106,84 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
 
         private static IResult<InstaLoginResult> TryLogIn(IInstaApi instaApi)
         {
-            //delay.Disable();
             Task<IResult<InstaLoginResult>> logInTask = Task.Run(() => instaApi.LoginAsync());
             logInTask.Wait();
-            //delay.Enable();
 
             return logInTask.Result;
         }
 
-        public List<InstagramPost> GetUserPostByUsername(string username)
+        public List<InstagramPost> GetUserPostsByUsername(string username, byte[] instagramCookies)
         {
-            throw new NotImplementedException();
+            if(_instaApi == null)
+            {
+                _instaApi = CreateInstaApi(instagramCookies, REQUEST_DELAY_MIN, REQUEST_DELAY_MAX);
+            }
+
+            List<InstagramPost> posts = new List<InstagramPost>();
+
+            PaginationParameters pageParams = PaginationParameters.Empty;
+
+            Task<IResult<InstaMediaList>> mediaListTask = Task.Run(() => _instaApi.UserProcessor.GetUserMediaAsync("_kris_svat_", pageParams));
+            mediaListTask.Wait();
+            IResult<InstaMediaList> mediaList = mediaListTask.Result;
+
+            if (mediaList.Succeeded)
+            {
+                foreach (InstaMedia media in mediaList.Value)
+                {
+                    InstagramPost post = new InstagramPost();
+                    post.CountOfComments = Convert.ToInt32(media.CommentsCount);
+                    post.CountOfLikes = Convert.ToInt32(media.LikesCount);
+                    post.MediaFileUri = GetUri(media);
+                    posts.Add(post);
+                }
+            }
+
+            return posts;
         }
 
-        public List<InstagramPost> GetUserPostByPrimaryKey(string primaryKey)
+        private string GetUri(InstaMedia media)
+        {
+            string uri = string.Empty;
+
+            switch (media.MediaType)
+            {
+                case InstaMediaType.Carousel:
+                    InstaCarouselItem item = media.Carousel.First();
+                    uri = GetUri(item);
+                    break;
+
+                case InstaMediaType.Video:
+                    uri = media.Videos.First().Uri;
+                    break;
+
+                case InstaMediaType.Image:
+                    uri = media.Images.First().Uri;
+                    break;
+            }
+
+            return uri;
+        }
+
+        private string GetUri(InstaCarouselItem item)
+        {
+            string uri = string.Empty;
+
+            switch (item.MediaType)
+            {
+                case InstaMediaType.Image:
+                    uri = item.Images.First().Uri;
+                    break;
+
+                case InstaMediaType.Video:
+                    uri = item.Videos.First().Uri;
+                    break;
+            }
+
+            return uri;
+        }
+
+        public List<InstagramPost> GetUserPostsByPrimaryKey(string primaryKey, byte[] instagramCookies)
         {
             throw new NotImplementedException();
         }
