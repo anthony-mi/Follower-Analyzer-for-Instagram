@@ -102,7 +102,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         public ActionResult SortingPostsDescOrder()
         {
             string currentUserPrimaryKey = Session["PrimaryKey"].ToString();
-            var posts = instaApi.GetUserPostsByUsername(Session["UserName"].ToString(), GetInstagramCookiesByUserPrimaryKey(currentUserPrimaryKey));
+            var posts = _instaApi.GetUserPostsByUsername(Session["UserName"].ToString(), GetInstagramCookiesByUserPrimaryKey(currentUserPrimaryKey));
             var sortPosts = from post in posts orderby post.CountOfComments select post;
             var topTenPosts = new List<InstagramPost>();
             int counter = 0;
