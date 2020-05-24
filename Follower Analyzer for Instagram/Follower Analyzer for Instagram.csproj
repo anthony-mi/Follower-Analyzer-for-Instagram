@@ -213,6 +213,7 @@
     <Content Include="Content\bootstrap-sandstone.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\Images\about.jpg" />
     <Content Include="Content\Images\big-logo.png" />
     <Content Include="Content\Images\logo.png" />
     <Content Include="Content\Images\register.jpg" />
