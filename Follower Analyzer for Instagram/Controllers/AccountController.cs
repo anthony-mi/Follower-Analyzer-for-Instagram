@@ -84,7 +84,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 }
                 Session["PrimaryKey"] = primaryKey;
                 Session["Authorized"] = true;
-                ViewBag.UserName = model.Username;
+                Session["UserName"] = model.Username;
 
                 return RedirectToLocal(returnUrl);
             }
