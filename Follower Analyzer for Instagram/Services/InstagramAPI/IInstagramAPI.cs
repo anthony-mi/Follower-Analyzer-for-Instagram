@@ -1,4 +1,5 @@
 ﻿using Follower_Analyzer_for_Instagram.Models;
+using Follower_Analyzer_for_Instagram.Models.DBInfrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +14,6 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
         string GetCurrentUserPrimaryKey();
         List<InstagramPost> GetUserPostsByUsername(string username, byte[] instagramCookies);
         List<InstagramPost> GetUserPostsByPrimaryKey(string primaryKey, byte[] instagramCookies);
+        Task<bool> Logout(IRepository repository);
     }
 }

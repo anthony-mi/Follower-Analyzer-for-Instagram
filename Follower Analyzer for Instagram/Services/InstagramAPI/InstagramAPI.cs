@@ -1,4 +1,5 @@
 ﻿using Follower_Analyzer_for_Instagram.Models;
+using Follower_Analyzer_for_Instagram.Models.DBInfrastructure;
 using InstagramApiSharp;
 using InstagramApiSharp.API;
 using InstagramApiSharp.API.Builder;
@@ -10,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.UI.WebControls;
 using System.Xml.XPath;
 
 namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
@@ -186,6 +188,34 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
         public List<InstagramPost> GetUserPostsByPrimaryKey(string primaryKey, byte[] instagramCookies)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<bool> Logout(IRepository repository)
+        {
+            string primaryKey = GetCurrentUserPrimaryKey();
+            User user = null;
+
+            if (!string.IsNullOrEmpty(primaryKey))
+            {
+                user = await repository.GetAsync<User>(u => u.InstagramPK == primaryKey);
+                
+                if (_instaApi == null)
+                {
+                    _instaApi = CreateInstaApi(user.StateData, REQUEST_DELAY_MIN, REQUEST_DELAY_MAX);
+                }
+
+                if(_instaApi !=null)
+                {
+                    IResult<bool> isLogout = await _instaApi.LogoutAsync();
+
+                    if(isLogout.Succeeded)
+                    {
+                        await repository.DeleteAsync(user);
+                        return isLogout.Succeeded;
+                    }
+                }
+            }
+            return false;
         }
     }
 }

@@ -95,12 +95,16 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         //
         // GET: /Account/LogOff
         [HttpGet]
-        public ActionResult Logout()
+        public async Task<ActionResult> Logout()
         {
-            Session.Abandon();
+            await _instagramAPI.Logout(_repository);
 
-            return RedirectToAction("Index", "Home");
+            Session.Abandon();//delete primary key
+
+            return RedirectToAction("Login", "Account");
         }
+
+        
 
         #region Helpers
 
