@@ -114,7 +114,8 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 }
 
                 Session["PrimaryKey"] = primaryKey;
-                Session["Username"] = model.Username;
+                Session["Authorized"] = true;
+                Session["UserName"] = model.Username;
 
                 return RedirectToLocal(returnUrl);
             }
@@ -136,7 +137,14 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
             Session.Abandon();
 
-            return RedirectToAction("Login", "Account");
+            if (f)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         

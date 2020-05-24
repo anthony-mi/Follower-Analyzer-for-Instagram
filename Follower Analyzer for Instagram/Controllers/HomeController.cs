@@ -99,6 +99,30 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             return View("ListPosts", topTenPosts);
         }
 
+        public ActionResult SortingPostsDescOrder()
+        {
+            string currentUserPrimaryKey = Session["PrimaryKey"].ToString();
+            var posts = instaApi.GetUserPostsByUsername(Session["UserName"].ToString(), GetInstagramCookiesByUserPrimaryKey(currentUserPrimaryKey));
+            var sortPosts = from post in posts orderby post.CountOfComments select post;
+            var topTenPosts = new List<InstagramPost>();
+            int counter = 0;
+
+            foreach (InstagramPost post in sortPosts)
+            {
+                if (post != null)
+                {
+                    topTenPosts.Add(post);
+                }
+
+                if (counter == 10)
+                {
+                    break;
+                }
+                counter++;
+            }
+            return View("ViewName", topTenPosts);
+        }
+
         [HttpGet]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> GetMostPopularPosts(IndexViewModel viewModel)
