@@ -134,17 +134,9 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         public async Task<ActionResult> Logout()
         {
             await _instagramAPI.LogoutAsync();
-
             Session.Abandon();
 
-            if (f)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }
+           return RedirectToAction("Login", "Account");
         }
 
         

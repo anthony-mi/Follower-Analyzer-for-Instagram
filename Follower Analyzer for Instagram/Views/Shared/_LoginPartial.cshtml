@@ -12,12 +12,13 @@
             </li>
             <li class="nav-item">
                 @*@Html.ActionLink("Log out", "Logout", "Account", null, new { @class = "nav-link" })*@
-                <input type="submit" class="btn btn-danger mr-2 px-4" value="Log out"></input>
+                <input type="submit" class="btn btn-danger mr-2 px-4" value="Log out"/>
             </li>
         </ul>
-}
-else
-{
+    }
+ }
+ else
+ {
     <ul class="nav navbar-nav mr-3">
         <li class="nav-item">@Html.ActionLink("Log in", "Login", "Account", null, new { @class = "nav-link" })</li>
     </ul>
