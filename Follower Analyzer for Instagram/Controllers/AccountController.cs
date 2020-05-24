@@ -83,6 +83,9 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                     foundUser.StateData = instagramUserCookies;
                 }
                 Session["PrimaryKey"] = primaryKey;
+                Session["Authorized"] = true;
+                ViewBag.UserName = model.Username;
+
                 return RedirectToLocal(returnUrl);
             }
             else
@@ -92,16 +95,20 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             }
         }
 
-        //
-        // GET: /Account/LogOff
-        [HttpGet]
         public async Task<ActionResult> Logout()
         {
-            await _instagramAPI.Logout(_repository);
+          bool f =  await _instagramAPI.Logout(_repository);
 
             Session.Abandon();//delete primary key
 
-            return RedirectToAction("Login", "Account");
+            if (f)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         

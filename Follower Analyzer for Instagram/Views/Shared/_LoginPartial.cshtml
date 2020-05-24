@@ -1,20 +1,13 @@
-﻿@{ string login = (string)HttpContext.Current.Session["Login"]; }
-
-@if (login != null)
+﻿@if (Session["Authorized"] != null&& Session["Authorized"].ToString() != "false")
 {
-    using (Html.BeginForm())
-    {
-        @Html.AntiForgeryToken()
-
         <ul class="nav navbar-nav mr-3">
             <li class="nav-item">
-                <h1 class="navbar-brand pt-2"><i>Hello, @login!</i></h1>
+                <h1 class="navbar-brand pt-2"><i>Hello, @ViewBag.UserName!</i></h1>
             </li>
             <li class="nav-item">
                 @Html.ActionLink("Log out", "Logout", "Account", null, new { @class = "nav-link" })
             </li>
         </ul>
-    }
 }
 else
 {
