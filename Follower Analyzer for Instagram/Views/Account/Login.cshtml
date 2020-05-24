@@ -7,7 +7,6 @@
 <div class="container mt-5">
     @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "col-sm-8 col-md-6 center-block mx-auto", role = "form" }))
     {
-        @Html.AntiForgeryToken()
         <div class="form-group">
             <div class="text-center mb-5">
                 <img src="~/Content/Images/big-logo.png" />

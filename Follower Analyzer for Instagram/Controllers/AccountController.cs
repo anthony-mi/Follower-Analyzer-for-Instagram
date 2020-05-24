@@ -24,7 +24,37 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         public AccountController(IRepository repo, IInstagramAPI instagramAPI)
         {
             _repository = repo;
-            _instagramAPI = instagramAPI;
+            InitializeInstaAPI(instagramAPI);
+        }
+
+        private void InitializeInstaAPI(IInstagramAPI instaApi)
+        {
+            _instagramAPI = instaApi;
+
+            if(System.Web.HttpContext.Current.Session["PrimaryKey"] == null)
+            {
+                return;
+            }
+
+            string currentUserPrimaryKey = System.Web.HttpContext.Current.Session["PrimaryKey"].ToString();
+
+            if (!string.IsNullOrEmpty(currentUserPrimaryKey))
+            {
+                _instagramAPI.SetCookies(GetInstagramCookiesByUserPrimaryKey(currentUserPrimaryKey));
+            }
+        }
+
+        private byte[] GetInstagramCookiesByUserPrimaryKey(string primaryKey)
+        {
+            //User user = repository.GetAsync<User>(u => u.InstagramPK == primaryKey).Result;
+            User user = new User();
+
+            using (FollowerAnalyzerContext dbContext = new FollowerAnalyzerContext())
+            {
+                user = dbContext.Users.First(u => u.InstagramPK == primaryKey);
+            }
+
+            return user == null ? new byte[] { } : user.StateData;
         }
 
         public AccountController()
@@ -33,6 +63,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
         //
         // GET: /Account/Login
+        [HttpGet]
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
@@ -44,7 +75,6 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         // POST: /Account/Login
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
             if (!ModelState.IsValid)
@@ -67,13 +97,12 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                     return View(model);
                 }
 
-                // TODO: initialize user properties
                 newUser.InstagramPK = primaryKey;
                 newUser.StateData = instagramUserCookies;
 
                 User foundUser = await _repository.GetAsync<User>(u => u.InstagramPK == primaryKey);
 
-                if(foundUser == null)
+                if (foundUser == null)
                 {
                     newUser.LastUpdateDate = DateTime.Now;
                     await _repository.CreateAsync<User>(newUser);
@@ -81,7 +110,9 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 else
                 {
                     foundUser.StateData = instagramUserCookies;
+                    await _repository.UpdateAsync<User>(foundUser);
                 }
+
                 Session["PrimaryKey"] = primaryKey;
                 Session["Authorized"] = true;
                 Session["UserName"] = model.Username;
@@ -95,11 +126,16 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             }
         }
 
+        //
+        // GET: /Account/LogOff
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Logout()
         {
-          bool f =  await _instagramAPI.Logout(_repository);
+            await _instagramAPI.LogoutAsync();
 
-            Session.Abandon();//delete primary key
+            Session.Abandon();
 
             if (f)
             {

@@ -13,13 +13,30 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 {
     public class HomeController : Controller
     {
-        IRepository repository;
-        private IInstagramAPI instaApi;
+        private IRepository _repository;
+        private IInstagramAPI _instaApi;
 
-        public HomeController(IRepository repo, IInstagramAPI instaApi)
+        public HomeController(IRepository repository, IInstagramAPI instaApi)
         {
-            repository = repo;
-            this.instaApi = instaApi;
+            _repository = repository;
+            InitializeInstaAPI(instaApi);
+        }
+
+        private void InitializeInstaAPI(IInstagramAPI instaApi)
+        {
+            _instaApi = instaApi;
+
+            if (System.Web.HttpContext.Current.Session["PrimaryKey"] == null)
+            {
+                return;
+            }
+
+            string currentUserPrimaryKey = System.Web.HttpContext.Current.Session["PrimaryKey"].ToString();
+
+            if (!string.IsNullOrEmpty(currentUserPrimaryKey))
+            {
+                _instaApi.SetCookies(GetInstagramCookiesByUserPrimaryKey(currentUserPrimaryKey));
+            }
         }
 
         public ActionResult Index()
@@ -38,8 +55,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
         public ActionResult TopTenLikes(string userName)
         {
-            string currentUserPrimaryKey = Session["PrimaryKey"].ToString();
-            var posts = instaApi.GetUserPostsByUsername(userName, GetInstagramCookiesByUserPrimaryKey(currentUserPrimaryKey));
+            var posts = _instaApi.GetUserPostsByUsername(userName);
             var sortPosts = from post in posts orderby post.CountOfLikes select post;
             var topTenPosts = new List<InstagramPost>();
             int counter = 0;
@@ -62,8 +78,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
         public ActionResult TopTenByComments(string userName)
         {
-            string currentUserPrimaryKey = Session["PrimaryKey"].ToString();
-            var posts = instaApi.GetUserPostsByUsername(userName, GetInstagramCookiesByUserPrimaryKey(currentUserPrimaryKey));
+            var posts = _instaApi.GetUserPostsByUsername(userName);
             var sortPosts = from post in posts orderby post.CountOfComments select post;
             var topTenPosts = new List<InstagramPost>();
             int counter = 0;
@@ -109,6 +124,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         }
 
         [HttpGet]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> GetMostPopularPosts(IndexViewModel viewModel)
         {
             if (!ModelState.IsValid)
@@ -116,8 +132,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 return View(viewModel);
             }
 
-            string currentUserPrimaryKey = Session["PrimaryKey"].ToString();
-            List<InstagramPost> posts = instaApi.GetUserPostsByUsername(viewModel.Username, GetInstagramCookiesByUserPrimaryKey(currentUserPrimaryKey));
+            List<InstagramPost> posts = _instaApi.GetUserPostsByUsername(viewModel.Username);
             viewModel.Posts = new List<InstagramPost>();
 
             if (posts.Count == 0)
@@ -125,8 +140,6 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 return View("Index", viewModel);
             }
 
-            // Не та сортировка, Паша
-            //var sortedByLikesPosts = from post in posts orderby post.CountOfLikes select post;
             var sortedByLikesPosts = from post in posts orderby post.CountOfLikes select post;
             viewModel.Posts.Add(sortedByLikesPosts.Last());
 
