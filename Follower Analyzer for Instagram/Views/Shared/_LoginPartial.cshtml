@@ -1,17 +1,18 @@
-﻿@{ string login = (string)HttpContext.Current.Session["Login"]; }
+﻿@{ string username = (string)HttpContext.Current.Session["Username"]; }
 
-@if (login != null)
+@if (username != null)
 {
-    using (Html.BeginForm())
+    using (Html.BeginForm("Logout", "Account", FormMethod.Post))
     {
         @Html.AntiForgeryToken()
 
         <ul class="nav navbar-nav mr-3">
             <li class="nav-item">
-                <h1 class="navbar-brand pt-2"><i>Hello, @login!</i></h1>
+                <h1 class="navbar-brand pt-2"><i>Hello, @username!</i></h1>
             </li>
             <li class="nav-item">
-                @Html.ActionLink("Log out", "Logout", "Account", null, new { @class = "nav-link" })
+                @*@Html.ActionLink("Log out", "Logout", "Account", null, new { @class = "nav-link" })*@
+                <input type="submit" class="btn btn-danger mr-2 px-4" value="Log out"></input>
             </li>
         </ul>
     }

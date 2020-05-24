@@ -10,7 +10,7 @@
 </head>
 <body>
     <div id="mainNavbar" class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
-        @if ((string)HttpContext.Current.Session["Login"] != null)
+        @if (HttpContext.Current.Session["PrimaryKey"] != null)
         {
             <a class="navbar-brand ml-3" href="/Home/Index">
                 <img src="~/Content/Images/logo.png" />
@@ -29,7 +29,7 @@
 
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav mr-auto">
-                @if ((string)HttpContext.Current.Session["Login"] != null)
+                @if (HttpContext.Current.Session["PrimaryKey"] != null)
                 {
                     <li class="nav-item active">@Html.ActionLink("Home", "Index", "Home", null, new { @class = "nav-link mr-3" })</li>
                 }

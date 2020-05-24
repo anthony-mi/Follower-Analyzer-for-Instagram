@@ -10,10 +10,13 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
 {
     public interface IInstagramAPI
     {
-        bool TryAuthenticate(string username, string password, out byte[] instagramUserCookies);
         string GetCurrentUserPrimaryKey();
+        List<InstagramPost> GetUserPostsByUsername(string username);
         List<InstagramPost> GetUserPostsByUsername(string username, byte[] instagramCookies);
+        List<InstagramPost> GetUserPostsByPrimaryKey(string primaryKey);
         List<InstagramPost> GetUserPostsByPrimaryKey(string primaryKey, byte[] instagramCookies);
-        Task<bool> Logout(IRepository repository);
+        Task<bool> LogoutAsync();
+        void SetCookies(byte[] instagramCookies);
+        bool TryAuthenticate(string username, string password, out byte[] instagramUserCookies);
     }
 }

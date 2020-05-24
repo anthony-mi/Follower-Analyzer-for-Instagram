@@ -116,16 +116,13 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
 
         public List<InstagramPost> GetUserPostsByUsername(string username, byte[] instagramCookies)
         {
-            if(_instaApi == null)
-            {
-                _instaApi = CreateInstaApi(instagramCookies, REQUEST_DELAY_MIN, REQUEST_DELAY_MAX);
-            }
+            IInstaApi instaApi = CreateInstaApi(instagramCookies, REQUEST_DELAY_MIN, REQUEST_DELAY_MAX);
 
             List<InstagramPost> posts = new List<InstagramPost>();
 
             PaginationParameters pageParams = PaginationParameters.Empty;
 
-            Task<IResult<InstaMediaList>> mediaListTask = Task.Run(() => _instaApi.UserProcessor.GetUserMediaAsync("_kris_svat_", pageParams));
+            Task<IResult<InstaMediaList>> mediaListTask = Task.Run(() => instaApi.UserProcessor.GetUserMediaAsync("_kris_svat_", pageParams));
             mediaListTask.Wait();
             IResult<InstaMediaList> mediaList = mediaListTask.Result;
 
@@ -190,32 +187,59 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
             throw new NotImplementedException();
         }
 
-        public async Task<bool> Logout(IRepository repository)
+        public async Task<bool> LogoutAsync()
         {
-            string primaryKey = GetCurrentUserPrimaryKey();
-            User user = null;
+            bool isLoggedOut = false;
 
-            if (!string.IsNullOrEmpty(primaryKey))
+            if (_instaApi == null)
             {
-                user = await repository.GetAsync<User>(u => u.InstagramPK == primaryKey);
-                
-                if (_instaApi == null)
-                {
-                    _instaApi = CreateInstaApi(user.StateData, REQUEST_DELAY_MIN, REQUEST_DELAY_MAX);
-                }
+                throw new NullReferenceException();
+            }
 
-                if(_instaApi !=null)
-                {
-                    IResult<bool> isLogout = await _instaApi.LogoutAsync();
+            IResult<bool> logout = await _instaApi.LogoutAsync();
+            isLoggedOut = logout.Succeeded;
 
-                    if(isLogout.Succeeded)
-                    {
-                        await repository.DeleteAsync(user);
-                        return isLogout.Succeeded;
-                    }
+            return isLoggedOut;
+        }
+
+        public void SetCookies(byte[] instagramCookies)
+        {
+            _instaApi = CreateInstaApi(instagramCookies, REQUEST_DELAY_MIN, REQUEST_DELAY_MAX);
+        }
+
+        public List<InstagramPost> GetUserPostsByUsername(string username)
+        {
+            if (_instaApi == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            List<InstagramPost> posts = new List<InstagramPost>();
+
+            PaginationParameters pageParams = PaginationParameters.Empty;
+
+            Task<IResult<InstaMediaList>> mediaListTask = Task.Run(() => _instaApi.UserProcessor.GetUserMediaAsync("_kris_svat_", pageParams));
+            mediaListTask.Wait();
+            IResult<InstaMediaList> mediaList = mediaListTask.Result;
+
+            if (mediaList.Succeeded)
+            {
+                foreach (InstaMedia media in mediaList.Value)
+                {
+                    InstagramPost post = new InstagramPost();
+                    post.CountOfComments = Convert.ToInt32(media.CommentsCount);
+                    post.CountOfLikes = Convert.ToInt32(media.LikesCount);
+                    post.MediaFileUri = GetUri(media);
+                    posts.Add(post);
                 }
             }
-            return false;
+
+            return posts;
+        }
+
+        public List<InstagramPost> GetUserPostsByPrimaryKey(string primaryKey)
+        {
+            throw new NotImplementedException();
         }
     }
 }
