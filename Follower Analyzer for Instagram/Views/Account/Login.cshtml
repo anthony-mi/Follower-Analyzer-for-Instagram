@@ -5,6 +5,11 @@
 }
 
 <div class="container mt-5">
+    <div id="divLoading">
+        <div class="lds-heart" style="position: absolute; top: 30%; left: 47%;">
+            <div></div>
+        </div>
+    </div>
     @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "col-sm-8 col-md-6 center-block mx-auto", role = "form" }))
     {
         <div class="form-group">
@@ -25,7 +30,7 @@
                 @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
             </div>
             <div class="form-group">
-                <input type="submit" value="Login" class="btn btn-dark btn-block btn-lg px-sm-2 my-4" />
+                <input type="submit" value="Login" class="btn btn-dark btn-block btn-lg px-sm-2 my-4" onclick="ShowSpinner();" />
             </div>
             <div class="alert alert-dismissible alert-light text-center rounded">
                 You need an Instagram account to use this app!
