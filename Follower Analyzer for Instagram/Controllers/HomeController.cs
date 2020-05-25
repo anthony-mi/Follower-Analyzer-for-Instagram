@@ -161,5 +161,35 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
             return user == null ? new byte[] { } : user.StateData;
         }
+
+        public async Task<ActionResult> GetFollowersStatisticsAsync(string userPrimaryKey = null)
+        {
+            if(String.IsNullOrEmpty(userPrimaryKey))
+                userPrimaryKey = System.Web.HttpContext.Current.Session["PrimaryKey"].ToString();
+            User user = new User();
+            user = await _repository.GetAsync<User>(x => x.InstagramPK == userPrimaryKey);
+            FollowersStatisticsViewModel followersStatistics = new FollowersStatisticsViewModel();
+            // Get current followers list
+            List<User> currentFollowersList = await _instaApi.GetUserFollowersByUsernameAsync(user.Username);
+            // Get unsubscribed followers
+            foreach(var follower in user.Followers)
+            {
+                if (!currentFollowersList.Contains(follower))
+                    followersStatistics.UnsubscribedFollowers.Add(follower);
+            }
+            // Get new followers
+            foreach (var follower in currentFollowersList)
+            {
+                if (!user.Followers.Contains(follower))
+                    followersStatistics.NewFollowers.Add(follower);
+            }
+            //If there are changes, then save them in the database
+            if (followersStatistics.NewFollowers.Count > 0 || followersStatistics.UnsubscribedFollowers.Count > 0)
+            { 
+                user.Followers = currentFollowersList;
+                await _repository.UpdateAsync<User>(user);
+            }
+            return PartialView("_FollowersStatistics", followersStatistics);
+        }
     }
 }

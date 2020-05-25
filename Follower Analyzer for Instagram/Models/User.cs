@@ -14,9 +14,7 @@ namespace Follower_Analyzer_for_Instagram.Models
         // Здесь мы храним инстаграм кукис
         public byte[] StateData { get; set; }
         // Список подписчиков пользователя
-        public virtual List<User> Followers { get; set; }
-        // Количество подписчиков пользователя (думаю, что это поле можно и убрать)
-        public int FollowersCount { get; set; }
+        public List<User> Followers { get; set; }
         public DateTime LastUpdateDate { get; set; }
 
         public User()
