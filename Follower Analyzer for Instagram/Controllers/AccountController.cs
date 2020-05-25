@@ -93,6 +93,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
                 newUser.InstagramPK = primaryKey;
                 newUser.StateData = instagramUserCookies;
+                newUser.Username = model.Username;
 
                 var foundUser = await _repository.GetAsync<User>(u => u.InstagramPK == primaryKey);
 
@@ -104,6 +105,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 else
                 {
                     foundUser.StateData = instagramUserCookies;
+                    foundUser.Username = model.Username; // Возможно пользователь изменил свой username после прошлой авторизации.
                     await _repository.UpdateAsync<User>(foundUser);
                 }
 
