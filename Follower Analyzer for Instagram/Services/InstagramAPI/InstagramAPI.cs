@@ -183,11 +183,6 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
             return uri;
         }
 
-        public List<InstagramPost> GetUserPostsByPrimaryKey(string primaryKey, byte[] instagramCookies)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<bool> LogoutAsync()
         {
             bool isLoggedOut = false;
@@ -236,11 +231,6 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
             }
 
             return posts;
-        }
-
-        public List<InstagramPost> GetUserPostsByPrimaryKey(string primaryKey)
-        {
-            throw new NotImplementedException();
         }
 
         public List<User> GetUserFollowersByUsername(string username)
@@ -305,16 +295,6 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
             }
 
             return followersResult;
-        }
-
-        public List<User> GetUserFollowersByPrimaryKey(string primaryKey)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<User>> GetUserFollowersByPrimaryKeyAsync(string primaryKey)
-        {
-            throw new NotImplementedException();
         }
     }
 }

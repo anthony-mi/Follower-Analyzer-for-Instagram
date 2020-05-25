@@ -13,12 +13,8 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
         string GetCurrentUserPrimaryKey();
         List<User> GetUserFollowersByUsername(string username);
         Task<List<User>> GetUserFollowersByUsernameAsync(string username);
-        List<User> GetUserFollowersByPrimaryKey(string primaryKey);
-        Task<List<User>> GetUserFollowersByPrimaryKeyAsync(string primaryKey);
         List<InstagramPost> GetUserPostsByUsername(string username);
         List<InstagramPost> GetUserPostsByUsername(string username, byte[] instagramCookies);
-        List<InstagramPost> GetUserPostsByPrimaryKey(string primaryKey);
-        List<InstagramPost> GetUserPostsByPrimaryKey(string primaryKey, byte[] instagramCookies);
         Task<bool> LogoutAsync();
         void SetCookies(byte[] instagramCookies);
         bool TryAuthenticate(string username, string password, out byte[] instagramUserCookies);
