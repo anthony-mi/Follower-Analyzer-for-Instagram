@@ -137,7 +137,6 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         }
 
         [HttpGet]
-        [ValidateAntiForgeryToken]
         public ActionResult GetMostPopularPosts(IndexViewModel viewModel)
         {
             if (!ModelState.IsValid)
