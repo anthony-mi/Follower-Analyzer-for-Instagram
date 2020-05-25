@@ -16,8 +16,7 @@
              required = "required",
              id = "inputDefault"
          })
-            <input type="submit" class="btn btn-info mr-2 px-4" value="Get most popular posts"></input>
-            @*<input type="text" class="form-control col-5 mr-2" placeholder="Please, enter instagram username here" id="inputDefault">*@
+            <input type="submit" class="btn btn-info mr-2 px-4" value="Get most popular posts" />
             @*<input type="button" class="btn btn-info mr-2 px-4" value="Comments" />
                 <input type="button" class="btn btn-danger mr-2 px-5" value="Likes" />*@
         </div>
@@ -25,7 +24,7 @@
 
 
 </div>
-@if (Model.Posts.Count != 0)
+@if (Model.Posts != null && Model.Posts.Count != 0)
 {
     <div class="py-5 bg-light">
         <div class="container">
@@ -38,12 +37,6 @@
                             <li class="list-group-item">Likes: @post.CountOfLikes</li>
                             <li class="list-group-item">Comments: @post.CountOfComments</li>
                         </ul>
-                        @*<div class="card-body">
-                                <p class="card-text">Post's content.</p>
-                            </div>
-                            <div class="card-footer text-muted">
-                                Date: (по желанию)
-                            </div>*@
                     </div>
                 }
             </div>
