@@ -3,6 +3,7 @@ using Follower_Analyzer_for_Instagram.Models.DBInfrastructure;
 using InstagramApiSharp;
 using InstagramApiSharp.API;
 using InstagramApiSharp.API.Builder;
+using InstagramApiSharp.API.Processors;
 using InstagramApiSharp.Classes;
 using InstagramApiSharp.Classes.Models;
 using System;
@@ -128,14 +129,14 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
 
             if (mediaList.Succeeded)
             {
-                foreach (InstaMedia media in mediaList.Value)
+                Parallel.ForEach(mediaList.Value, media =>
                 {
                     InstagramPost post = new InstagramPost();
                     post.CountOfComments = Convert.ToInt32(media.CommentsCount);
                     post.CountOfLikes = Convert.ToInt32(media.LikesCount);
                     post.MediaFileUri = GetUri(media);
                     posts.Add(post);
-                }
+                });
             }
 
             return posts;
@@ -224,20 +225,94 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
 
             if (mediaList.Succeeded)
             {
-                foreach (InstaMedia media in mediaList.Value)
+                Parallel.ForEach(mediaList.Value, media =>
                 {
                     InstagramPost post = new InstagramPost();
                     post.CountOfComments = Convert.ToInt32(media.CommentsCount);
                     post.CountOfLikes = Convert.ToInt32(media.LikesCount);
                     post.MediaFileUri = GetUri(media);
                     posts.Add(post);
-                }
+                });
             }
 
             return posts;
         }
 
         public List<InstagramPost> GetUserPostsByPrimaryKey(string primaryKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<User> GetUserFollowersByUsername(string username)
+        {
+            if(_instaApi == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            List<User> followersResult = new List<User>();
+
+            PaginationParameters pageParams = PaginationParameters.Empty;
+
+            Task<IResult<InstaUserShortList>> getFollowersTask = Task.Run(
+                () => _instaApi.UserProcessor.GetUserFollowersAsync(username, pageParams));
+            getFollowersTask.Wait();
+
+            IResult<InstaUserShortList> followers = getFollowersTask.Result;;
+
+            if (followers.Succeeded)
+            {
+                Parallel.ForEach(followers.Value, (follower) =>
+                {
+                    User newUser = new User
+                    {
+                        InstagramPK = follower.Pk.ToString(),
+                        Username = follower.UserName
+                    };
+
+                    followersResult.Add(newUser);
+                });
+            }
+
+            return followersResult;
+        }
+
+        public async Task<List<User>> GetUserFollowersByUsernameAsync(string username)
+        {
+            if (_instaApi == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            List<User> followersResult = new List<User>();
+
+            PaginationParameters pageParams = PaginationParameters.Empty;
+
+            IResult<InstaUserShortList> followers = await _instaApi.UserProcessor.GetUserFollowersAsync(username, pageParams);
+
+            if (followers.Succeeded)
+            {
+                Parallel.ForEach(followers.Value, (follower) =>
+                {
+                    User newUser = new User
+                    {
+                        InstagramPK = follower.Pk.ToString(),
+                        Username = follower.UserName
+                    };
+
+                    followersResult.Add(newUser);
+                });
+            }
+
+            return followersResult;
+        }
+
+        public List<User> GetUserFollowersByPrimaryKey(string primaryKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<User>> GetUserFollowersByPrimaryKeyAsync(string primaryKey)
         {
             throw new NotImplementedException();
         }
