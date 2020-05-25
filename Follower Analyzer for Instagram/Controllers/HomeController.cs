@@ -39,6 +39,19 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             }
         }
 
+        private byte[] GetInstagramCookiesByUserPrimaryKey(string primaryKey)
+        {
+            //User user = repository.GetAsync<User>(u => u.InstagramPK == primaryKey).Result;
+            var user = new User();
+
+            using (var dbContext = new FollowerAnalyzerContext())
+            {
+                user = dbContext.Users.First(u => u.InstagramPK == primaryKey);
+            }
+
+            return user == null ? new byte[] { } : user.StateData;
+        }
+
         public ActionResult Index()
         {
             var viewModel = new IndexViewModel();
@@ -60,7 +73,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             var topTenPosts = new List<InstagramPost>();
             int counter = 0;
 
-            foreach (InstagramPost post in sortPosts)
+            foreach (var post in sortPosts)
             {
                 if (post != null)
                 {
@@ -83,7 +96,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             var topTenPosts = new List<InstagramPost>();
             int counter = 0;
 
-            foreach (InstagramPost post in sortPosts)
+            foreach (var post in sortPosts)
             {
                 if (post != null)
                 {
@@ -107,7 +120,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             var topTenPosts = new List<InstagramPost>();
             int counter = 0;
 
-            foreach (InstagramPost post in sortPosts)
+            foreach (var post in sortPosts)
             {
                 if (post != null)
                 {
@@ -149,26 +162,13 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             return View("Index", viewModel);
         }
 
-        private byte[] GetInstagramCookiesByUserPrimaryKey(string primaryKey)
-        {
-            //User user = repository.GetAsync<User>(u => u.InstagramPK == primaryKey).Result;
-            User user = new User();
-
-            using (FollowerAnalyzerContext dbContext = new FollowerAnalyzerContext())
-            {
-                user = dbContext.Users.First(u => u.InstagramPK == primaryKey);
-            }
-
-            return user == null ? new byte[] { } : user.StateData;
-        }
-
         public async Task<ActionResult> GetFollowersStatisticsAsync(string userPrimaryKey = null)
         {
             if(String.IsNullOrEmpty(userPrimaryKey))
                 userPrimaryKey = System.Web.HttpContext.Current.Session["PrimaryKey"].ToString();
-            User user = new User();
+            var user = new User();
             user = await _repository.GetAsync<User>(x => x.InstagramPK == userPrimaryKey);
-            FollowersStatisticsViewModel followersStatistics = new FollowersStatisticsViewModel();
+            var followersStatistics = new FollowersStatisticsViewModel();
             // Get current followers list
             List<User> currentFollowersList = await _instaApi.GetUserFollowersByUsernameAsync(user.Username);
             // Get unsubscribed followers
