@@ -105,7 +105,8 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 else
                 {
                     foundUser.StateData = instagramUserCookies;
-                    foundUser.Username = model.Username; // Возможно пользователь изменил свой username после прошлой авторизации.
+                    //Maybe user has been changed his username after last authorization
+                    foundUser.Username = model.Username; 
                     await _repository.UpdateAsync<User>(foundUser);
                 }
 
