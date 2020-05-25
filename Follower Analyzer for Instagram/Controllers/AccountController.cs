@@ -133,7 +133,20 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Logout()
         {
-            await _instagramAPI.LogoutAsync();
+           await _instagramAPI.LogoutAsync();
+
+            if (System.Web.HttpContext.Current.Session["PrimaryKey"] != null)
+            {
+                string primaryKey = System.Web.HttpContext.Current.Session["PrimaryKey"].ToString();
+
+                using (FollowerAnalyzerContext dbContext = new FollowerAnalyzerContext())
+                {
+                    User user = dbContext.Users.First(u => u.InstagramPK == primaryKey);
+                    user.StateData = new byte[] { };
+                    dbContext.SaveChangesAsync();
+                }
+            }
+
             Session.Abandon();
 
            return RedirectToAction("Login", "Account");
