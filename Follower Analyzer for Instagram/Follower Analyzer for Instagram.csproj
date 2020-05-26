@@ -192,12 +192,22 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\AutofacConfig.cs" />
+    <Compile Include="Migrations\202005251343028_UserNewFieldMigation.cs" />
+    <Compile Include="Migrations\202005251343028_UserNewFieldMigation.Designer.cs">
+      <DependentUpon>202005251343028_UserNewFieldMigation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202005251424133_UserChange.cs" />
+    <Compile Include="Migrations\202005251424133_UserChange.Designer.cs">
+      <DependentUpon>202005251424133_UserChange.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\DBInfrastructure\FollowerAnalyzerRepository.cs" />
     <Compile Include="Models\DBInfrastructure\IRepository.cs" />
     <Compile Include="Models\FollowerAnalyzerContext.cs" />
     <Compile Include="Models\InstagramPost.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Models\ViewModels\FollowersStatisticsViewModel.cs" />
     <Compile Include="Models\ViewModels\IndexViewModel.cs" />
     <Compile Include="Models\ViewModel\PostViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -213,9 +223,9 @@
     <Content Include="Content\bootstrap-sandstone.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\Images\about.jpg" />
     <Content Include="Content\Images\big-logo.png" />
     <Content Include="Content\Images\logo.png" />
-    <Content Include="Content\Images\register.jpg" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -257,6 +267,7 @@
     <Content Include="Scripts\popper-utils.min.js" />
     <Content Include="Scripts\popper.js" />
     <Content Include="Scripts\popper.min.js" />
+    <Content Include="Scripts\Script.js" />
     <Content Include="Scripts\src\index.js" />
     <Content Include="Scripts\src\methods\defaults.js" />
     <Content Include="Scripts\src\methods\destroy.js" />
@@ -351,6 +362,7 @@
     <Content Include="Scripts\popper.js.map" />
     <Content Include="Scripts\popper-utils.min.js.map" />
     <Content Include="Scripts\popper-utils.js.map" />
+    <Content Include="Views\Home\_FollowersStatistics.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AppData\" />
@@ -365,6 +377,14 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202005251343028_UserNewFieldMigation.resx">
+      <DependentUpon>202005251343028_UserNewFieldMigation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005251424133_UserChange.resx">
+      <DependentUpon>202005251424133_UserChange.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

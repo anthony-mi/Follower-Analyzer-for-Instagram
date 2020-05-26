@@ -3,6 +3,7 @@ using Follower_Analyzer_for_Instagram.Models.DBInfrastructure;
 using InstagramApiSharp;
 using InstagramApiSharp.API;
 using InstagramApiSharp.API.Builder;
+using InstagramApiSharp.API.Processors;
 using InstagramApiSharp.Classes;
 using InstagramApiSharp.Classes.Models;
 using System;
@@ -20,8 +21,8 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
     {
         private IInstaApi _instaApi = null;
 
-        private readonly int REQUEST_DELAY_MIN = 2;
-        private readonly int REQUEST_DELAY_MAX = 20;
+        private readonly int REQUEST_DELAY_MIN = 0;
+        private readonly int REQUEST_DELAY_MAX = 1;
 
         public bool TryAuthenticate(string username, string password, out byte[] instagramUserCookies)
         {
@@ -122,20 +123,20 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
 
             PaginationParameters pageParams = PaginationParameters.Empty;
 
-            Task<IResult<InstaMediaList>> mediaListTask = Task.Run(() => instaApi.UserProcessor.GetUserMediaAsync("_kris_svat_", pageParams));
+            Task<IResult<InstaMediaList>> mediaListTask = Task.Run(() => instaApi.UserProcessor.GetUserMediaAsync(username, pageParams));
             mediaListTask.Wait();
             IResult<InstaMediaList> mediaList = mediaListTask.Result;
 
             if (mediaList.Succeeded)
             {
-                foreach (InstaMedia media in mediaList.Value)
+                Parallel.ForEach(mediaList.Value, media =>
                 {
                     InstagramPost post = new InstagramPost();
                     post.CountOfComments = Convert.ToInt32(media.CommentsCount);
                     post.CountOfLikes = Convert.ToInt32(media.LikesCount);
                     post.MediaFileUri = GetUri(media);
                     posts.Add(post);
-                }
+                });
             }
 
             return posts;
@@ -182,11 +183,6 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
             return uri;
         }
 
-        public List<InstagramPost> GetUserPostsByPrimaryKey(string primaryKey, byte[] instagramCookies)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<bool> LogoutAsync()
         {
             bool isLoggedOut = false;
@@ -218,28 +214,191 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
 
             PaginationParameters pageParams = PaginationParameters.Empty;
 
-            Task<IResult<InstaMediaList>> mediaListTask = Task.Run(() => _instaApi.UserProcessor.GetUserMediaAsync("_kris_svat_", pageParams));
+            Task<IResult<InstaMediaList>> mediaListTask = Task.Run(() => _instaApi.UserProcessor.GetUserMediaAsync(username, pageParams));
             mediaListTask.Wait();
             IResult<InstaMediaList> mediaList = mediaListTask.Result;
 
             if (mediaList.Succeeded)
             {
-                foreach (InstaMedia media in mediaList.Value)
+                Parallel.ForEach(mediaList.Value, media =>
                 {
                     InstagramPost post = new InstagramPost();
                     post.CountOfComments = Convert.ToInt32(media.CommentsCount);
                     post.CountOfLikes = Convert.ToInt32(media.LikesCount);
                     post.MediaFileUri = GetUri(media);
                     posts.Add(post);
-                }
+                });
             }
 
             return posts;
         }
 
+        public List<User> GetUserFollowersByUsername(string username)
+        {
+            if(_instaApi == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            List<User> followersResult = new List<User>();
+
+            PaginationParameters pageParams = PaginationParameters.Empty;
+
+            Task<IResult<InstaUserShortList>> getFollowersTask = Task.Run(
+                () => _instaApi.UserProcessor.GetUserFollowersAsync(username, pageParams));
+            getFollowersTask.Wait();
+
+            IResult<InstaUserShortList> followers = getFollowersTask.Result;;
+
+            if (followers.Succeeded)
+            {
+                Parallel.ForEach(followers.Value, (follower) =>
+                {
+                    User newUser = new User
+                    {
+                        InstagramPK = follower.Pk.ToString(),
+                        Username = follower.UserName
+                    };
+
+                    followersResult.Add(newUser);
+                });
+            }
+
+            return followersResult;
+        }
+
+        public async Task<List<User>> GetUserFollowersByUsernameAsync(string username)
+        {
+            if (_instaApi == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            List<User> followersResult = new List<User>();
+
+            PaginationParameters pageParams = PaginationParameters.Empty;
+
+            IResult<InstaUserShortList> followers = await _instaApi.UserProcessor.GetUserFollowersAsync(username, pageParams);
+
+            if (followers.Succeeded)
+            {
+                Parallel.ForEach(followers.Value, (follower) =>
+                {
+                    User newUser = new User
+                    {
+                        InstagramPK = follower.Pk.ToString(),
+                        Username = follower.UserName
+                    };
+
+                    followersResult.Add(newUser);
+                });
+            }
+
+            return followersResult;
+        }
+
+        public string GetUserProfilePictureUriByPrimaryKey(string primaryKey)
+        {
+            string uri = string.Empty;
+
+            if (_instaApi == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            long pk = Convert.ToInt64(primaryKey);
+
+            Task<IResult<InstaFullUserInfo>> userInfoTask = Task.Run(
+                () => _instaApi.UserProcessor.GetFullUserInfoAsync(pk));
+            userInfoTask.Wait();
+
+            IResult<InstaFullUserInfo> userInfo = userInfoTask.Result;
+
+            if (userInfo.Succeeded)
+            {
+                uri = userInfo.Value.UserDetail.ProfilePicUrl;
+            }
+
+            return uri;
+        }
+
+        public async Task<string> GetUserProfilePictureUriByPrimaryKeyAsync(string primaryKey)
+        {
+            string uri = string.Empty;
+
+            if (_instaApi == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            long pk = Convert.ToInt64(primaryKey);
+
+            IResult<InstaFullUserInfo> userInfo = await _instaApi.UserProcessor.GetFullUserInfoAsync(pk);
+
+            if (userInfo.Succeeded)
+            {
+                uri = userInfo.Value.UserDetail.ProfilePicUrl;
+            }
+
+            return uri;
+        }
+
         public List<InstagramPost> GetUserPostsByPrimaryKey(string primaryKey)
         {
-            throw new NotImplementedException();
+            if (_instaApi == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            long pk = Convert.ToInt64(primaryKey);
+            List<InstagramPost> posts = new List<InstagramPost>();
+            PaginationParameters pageParams = PaginationParameters.Empty;
+
+            Task<IResult<InstaMediaList>> mediaListTask = Task.Run(() => _instaApi.UserProcessor.GetUserMediaByIdAsync(pk, pageParams));
+            mediaListTask.Wait();
+            IResult<InstaMediaList> mediaList = mediaListTask.Result;
+
+            if (mediaList.Succeeded)
+            {
+                Parallel.ForEach(mediaList.Value, media =>
+                {
+                    InstagramPost post = new InstagramPost();
+                    post.CountOfComments = Convert.ToInt32(media.CommentsCount);
+                    post.CountOfLikes = Convert.ToInt32(media.LikesCount);
+                    post.MediaFileUri = GetUri(media);
+                    posts.Add(post);
+                });
+            }
+
+            return posts;
+        }
+
+        public async Task<List<InstagramPost>> GetUserPostsByPrimaryKeyAsync(string primaryKey)
+        {
+            if (_instaApi == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            long pk = Convert.ToInt64(primaryKey);
+            List<InstagramPost> posts = new List<InstagramPost>();
+            PaginationParameters pageParams = PaginationParameters.Empty;
+
+            IResult<InstaMediaList> mediaList = await _instaApi.UserProcessor.GetUserMediaByIdAsync(pk, pageParams);
+
+            if (mediaList.Succeeded)
+            {
+                Parallel.ForEach(mediaList.Value, media =>
+                {
+                    InstagramPost post = new InstagramPost();
+                    post.CountOfComments = Convert.ToInt32(media.CommentsCount);
+                    post.CountOfLikes = Convert.ToInt32(media.LikesCount);
+                    post.MediaFileUri = GetUri(media);
+                    posts.Add(post);
+                });
+            }
+
+            return posts;
         }
     }
 }
