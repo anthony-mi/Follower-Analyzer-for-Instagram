@@ -4,9 +4,11 @@ using Follower_Analyzer_for_Instagram.Models.ViewModels;
 using Follower_Analyzer_for_Instagram.Services.InstagramAPI;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
 
 namespace Follower_Analyzer_for_Instagram.Controllers
@@ -64,6 +66,46 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         public ActionResult About()
         {
             return View();
+        }
+
+        public async Task<ActionResult> test()
+        {
+            return View("TestListUsersObserv",await _repository.GetListAsync<User>()) ;
+        }
+   
+        public JsonResult AddUserToObservation()//-
+        {
+           
+            return Json(new {
+                User="Ivan",
+                Error = "User not added!" });//test
+             //Добавление нового пользователя для наблюдения
+        }
+
+        public JsonResult GetSubscribersCurrentUser()//+
+        {
+           List<User> subscribers = _instaApi.GetUserFollowersByUsername(Session["UserName"].ToString());
+          
+            return Json(subscribers);
+        }
+
+        public ActionResult UsersUnderObservation()//-
+        {
+            return View();//список пользователей под наблюденим
+        }
+
+        public ActionResult FinishUserMonitoring(int? id)//-
+        {
+
+
+            return View();//завершение наблюдения за пользователем
+        }
+
+        public ActionResult GetAnalysisReport(int? id)//-
+        {
+
+
+            return View();// возращает страницу с отчетом о наблюдение за  пользователем
         }
 
         public ActionResult TopTenLikes(string userName)

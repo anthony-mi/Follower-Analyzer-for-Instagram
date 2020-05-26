@@ -192,13 +192,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\AutofacConfig.cs" />
-    <Compile Include="Migrations\202005251343028_UserNewFieldMigation.cs" />
-    <Compile Include="Migrations\202005251343028_UserNewFieldMigation.Designer.cs">
-      <DependentUpon>202005251343028_UserNewFieldMigation.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202005251424133_UserChange.cs" />
-    <Compile Include="Migrations\202005251424133_UserChange.Designer.cs">
-      <DependentUpon>202005251424133_UserChange.cs</DependentUpon>
+    <Compile Include="Migrations\202005261524434_FirstMigration.cs" />
+    <Compile Include="Migrations\202005261524434_FirstMigration.Designer.cs">
+      <DependentUpon>202005261524434_FirstMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -363,6 +359,7 @@
     <Content Include="Scripts\popper-utils.min.js.map" />
     <Content Include="Scripts\popper-utils.js.map" />
     <Content Include="Views\Home\_FollowersStatistics.cshtml" />
+    <Content Include="Views\Home\TestListUsersObserv.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AppData\" />
@@ -379,11 +376,8 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202005251343028_UserNewFieldMigation.resx">
-      <DependentUpon>202005251343028_UserNewFieldMigation.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202005251424133_UserChange.resx">
-      <DependentUpon>202005251424133_UserChange.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202005261524434_FirstMigration.resx">
+      <DependentUpon>202005261524434_FirstMigration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
