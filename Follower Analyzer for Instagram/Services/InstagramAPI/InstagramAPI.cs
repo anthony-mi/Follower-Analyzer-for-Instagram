@@ -296,5 +296,51 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
 
             return followersResult;
         }
+
+        public string GetUserProfilePictureUriByPrimaryKey(string primaryKey)
+        {
+            string uri = string.Empty;
+
+            if (_instaApi == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            long pk = Convert.ToInt64(primaryKey);
+
+            Task<IResult<InstaFullUserInfo>> userInfoTask = Task.Run(
+                () => _instaApi.UserProcessor.GetFullUserInfoAsync(pk));
+            userInfoTask.Wait();
+
+            IResult<InstaFullUserInfo> userInfo = userInfoTask.Result;
+
+            if (userInfo.Succeeded)
+            {
+                uri = userInfo.Value.UserDetail.ProfilePicUrl;
+            }
+
+            return uri;
+        }
+
+        public async Task<string> GetUserProfilePictureUriByPrimaryKeyAsync(string primaryKey)
+        {
+            string uri = string.Empty;
+
+            if (_instaApi == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            long pk = Convert.ToInt64(primaryKey);
+
+            IResult<InstaFullUserInfo> userInfo = await _instaApi.UserProcessor.GetFullUserInfoAsync(pk);
+
+            if (userInfo.Succeeded)
+            {
+                uri = userInfo.Value.UserDetail.ProfilePicUrl;
+            }
+
+            return uri;
+        }
     }
 }
