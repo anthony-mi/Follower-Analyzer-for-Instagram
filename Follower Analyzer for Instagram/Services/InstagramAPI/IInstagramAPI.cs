@@ -15,6 +15,8 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
         Task<List<User>> GetUserFollowersByUsernameAsync(string username);
         List<InstagramPost> GetUserPostsByUsername(string username);
         List<InstagramPost> GetUserPostsByUsername(string username, byte[] instagramCookies);
+        List<InstagramPost> GetUserPostsByPrimaryKey(string primaryKey);
+        Task<List<InstagramPost>> GetUserPostsByPrimaryKeyAsync(string primaryKey);
         string GetUserProfilePictureUriByPrimaryKey(string primaryKey);
         Task<string> GetUserProfilePictureUriByPrimaryKeyAsync(string primaryKey);
         Task<bool> LogoutAsync();
