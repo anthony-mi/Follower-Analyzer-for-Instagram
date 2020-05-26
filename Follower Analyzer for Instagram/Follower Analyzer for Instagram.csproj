@@ -192,6 +192,11 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\AutofacConfig.cs" />
+    <Compile Include="Migrations\202005241638365_Initialization_Migration.cs" />
+    <Compile Include="Migrations\202005241638365_Initialization_Migration.Designer.cs">
+      <DependentUpon>202005241638365_Initialization_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\DBInfrastructure\FollowerAnalyzerRepository.cs" />
     <Compile Include="Models\DBInfrastructure\IRepository.cs" />
@@ -365,6 +370,11 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202005241638365_Initialization_Migration.resx">
+      <DependentUpon>202005241638365_Initialization_Migration.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
