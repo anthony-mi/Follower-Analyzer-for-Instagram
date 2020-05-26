@@ -21,8 +21,8 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
     {
         private IInstaApi _instaApi = null;
 
-        private readonly int REQUEST_DELAY_MIN = 2;
-        private readonly int REQUEST_DELAY_MAX = 20;
+        private readonly int REQUEST_DELAY_MIN = 0;
+        private readonly int REQUEST_DELAY_MAX = 1;
 
         public bool TryAuthenticate(string username, string password, out byte[] instagramUserCookies)
         {
