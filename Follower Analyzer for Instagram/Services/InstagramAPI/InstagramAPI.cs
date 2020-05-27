@@ -397,5 +397,67 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
 
             return posts;
         }
+
+        public List<User> GetUserSubscriptionsByUsername(string username)
+        {
+            if (_instaApi == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            List<User> subscriptionsResult = new List<User>();
+
+            Task<IResult<InstaUserShortList>> getSubscriptionsTask = Task.Run(
+                () => _instaApi.UserProcessor.GetUserFollowingAsync(username, PaginationParameters.MaxPagesToLoad(MAX_PAGES_TO_LOAD)));
+            getSubscriptionsTask.Wait();
+
+            IResult<InstaUserShortList> subscriptions = getSubscriptionsTask.Result; ;
+
+            if (subscriptions.Succeeded)
+            {
+                Parallel.ForEach(subscriptions.Value, (profile) =>
+                {
+                    User newProfile = new User
+                    {
+                        InstagramPK = profile.Pk.ToString(),
+                        Username = profile.UserName
+                    };
+
+                    subscriptionsResult.Add(newProfile);
+                });
+            }
+
+            return subscriptionsResult;
+        }
+
+        public async Task<List<User>> GetUserSubscriptionsByUsernameAsync(string username)
+        {
+            if (_instaApi == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            List<User> subscriptionsResult = new List<User>();
+
+            PaginationParameters pageParams = PaginationParameters.MaxPagesToLoad(MAX_PAGES_TO_LOAD);
+
+            IResult<InstaUserShortList> subscriptions = await _instaApi.UserProcessor.GetUserFollowingAsync(username, pageParams);
+
+            if (subscriptions.Succeeded)
+            {
+                Parallel.ForEach(subscriptions.Value, (profile) =>
+                {
+                    User newProfile = new User
+                    {
+                        InstagramPK = profile.Pk.ToString(),
+                        Username = profile.UserName
+                    };
+
+                    subscriptionsResult.Add(newProfile);
+                });
+            }
+
+            return subscriptionsResult;
+        }
     }
 }
