@@ -459,5 +459,21 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
 
             return subscriptionsResult;
         }
+
+        public string GetPrimaryKeyByUsername(string username)
+        {
+            string primaryKey = string.Empty;
+
+            Task<IResult<InstaUser>> userTask = Task.Run(() => _instaApi.UserProcessor.GetUserAsync(username));
+            userTask.Wait();
+            IResult<InstaUser> user = userTask.Result;
+
+            if (user.Succeeded)
+            {
+                primaryKey = user.Value.Pk.ToString();
+            }
+
+            return primaryKey;
+        }
     }
 }

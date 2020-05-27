@@ -10,6 +10,7 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
 {
     public interface IInstagramAPI
     {
+        string GetPrimaryKeyByUsername(string username);
         string GetCurrentUserPrimaryKey();
         List<User> GetUserFollowersByUsername(string username);
         Task<List<User>> GetUserFollowersByUsernameAsync(string username);
