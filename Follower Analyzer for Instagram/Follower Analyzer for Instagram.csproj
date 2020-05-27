@@ -210,6 +210,7 @@
     <Compile Include="Models\DBInfrastructure\IRepository.cs" />
     <Compile Include="Models\FollowerAnalyzerContext.cs" />
     <Compile Include="Models\UserActivity.cs" />
+    <Compile Include="Models\UserIsMonitored.cs" />
     <Compile Include="Models\ViewModels\InstagramPost.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\ViewModels\FollowersStatisticsViewModel.cs" />

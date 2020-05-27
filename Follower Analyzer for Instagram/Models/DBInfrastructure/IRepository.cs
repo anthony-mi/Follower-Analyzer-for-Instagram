@@ -17,5 +17,6 @@ namespace Follower_Analyzer_for_Instagram.Models.DBInfrastructure
         Task<bool> CreateAsync<TEntity>(TEntity entity) where TEntity : class;
         Task<bool> UpdateAsync<TEntity>(TEntity entity) where TEntity : class;
         Task<bool> DeleteAsync<TEntity>(TEntity entity) where TEntity : class;
+        bool AddUserUnderSupervision(UserIsMonitored userIsMonitored);
     }
 }

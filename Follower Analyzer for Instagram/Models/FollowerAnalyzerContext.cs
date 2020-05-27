@@ -13,5 +13,6 @@ namespace Follower_Analyzer_for_Instagram.Models
 
         public DbSet<User> Users { get; set; }
         public DbSet<UserActivity> UserActivities { get; set; }
+        public DbSet<UserIsMonitored> UsersUnderSupervision { get; set; }
     }
 }

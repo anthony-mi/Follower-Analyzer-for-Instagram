@@ -73,9 +73,19 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             return View("TestListUsersObserv",await _repository.GetListAsync<User>()) ;
         }
    
-        public JsonResult AddUserToObservation()//-
+        public JsonResult AddUserToObservation(string userName)//-
         {
+            //string primaryKey =_instaApi.GetPrimaryKeyByUsername(userName);
+            Models.User user = new User();
+            user.Followers = _instaApi.GetUserFollowersByUsername(userName);
            
+            bool added = false;
+            //_repository.AddUserUnderSupervision()
+
+
+
+
+
             return Json(new {
                 User="Ivan",
                 Error = "User not added!" });//test

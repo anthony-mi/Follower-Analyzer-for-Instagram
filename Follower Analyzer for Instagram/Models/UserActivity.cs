@@ -11,6 +11,7 @@ namespace Follower_Analyzer_for_Instagram.Models
         Like,
         Comment
     }
+
     public class UserActivity
     {
         public int Id { get; set; }

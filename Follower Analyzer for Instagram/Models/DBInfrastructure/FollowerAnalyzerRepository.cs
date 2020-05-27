@@ -49,6 +49,21 @@ namespace Follower_Analyzer_for_Instagram.Models.DBInfrastructure
             }
         }
 
+        public bool AddUserUnderSupervision(UserIsMonitored userIsMonitored)
+        {
+            try
+            {
+                context.UsersUnderSupervision.Add(userIsMonitored);
+                context.SaveChanges();
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public async Task<TEntity> GetAsync<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : class
         {
             TEntity entity = null;
