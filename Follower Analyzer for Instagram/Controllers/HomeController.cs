@@ -152,11 +152,17 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 return View("Index", viewModel);
             }
 
-            var sortedByLikesPosts = from post in posts orderby post.CountOfLikes select post;
-            viewModel.Posts.Add(sortedByLikesPosts.Last());
+            //var sortedByLikesPosts = from post in posts orderby post.CountOfLikes select post;
+            posts.Sort(
+                (post1, post2) => post1.CountOfLikes.CompareTo(post2.CountOfLikes)
+                );
+            viewModel.Posts.Add(posts.Last());
 
-            var sortedByCommentsPosts = from post in posts orderby post.CountOfComments select post;
-            viewModel.Posts.Add(sortedByCommentsPosts.Last());
+            posts.Sort(
+                (post1, post2) => post1.CountOfComments.CompareTo(post2.CountOfComments)
+                );
+            //var sortedByCommentsPosts = from post in posts orderby post.CountOfComments select post;
+            viewModel.Posts.Add(posts.Last());
 
             return View("Index", viewModel);
         }

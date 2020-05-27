@@ -23,6 +23,7 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
 
         private readonly int REQUEST_DELAY_MIN = 0;
         private readonly int REQUEST_DELAY_MAX = 1;
+        private readonly int MAX_PAGES_TO_LOAD = 25;
 
         public bool TryAuthenticate(string username, string password, out byte[] instagramUserCookies)
         {
@@ -212,9 +213,7 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
 
             List<InstagramPost> posts = new List<InstagramPost>();
 
-            PaginationParameters pageParams = PaginationParameters.Empty;
-
-            Task<IResult<InstaMediaList>> mediaListTask = Task.Run(() => _instaApi.UserProcessor.GetUserMediaAsync(username, pageParams));
+            Task<IResult<InstaMediaList>> mediaListTask = Task.Run(() => _instaApi.UserProcessor.GetUserMediaAsync(username, PaginationParameters.MaxPagesToLoad(MAX_PAGES_TO_LOAD)));
             mediaListTask.Wait();
             IResult<InstaMediaList> mediaList = mediaListTask.Result;
 
@@ -242,10 +241,8 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
 
             List<User> followersResult = new List<User>();
 
-            PaginationParameters pageParams = PaginationParameters.Empty;
-
             Task<IResult<InstaUserShortList>> getFollowersTask = Task.Run(
-                () => _instaApi.UserProcessor.GetUserFollowersAsync(username, pageParams));
+                () => _instaApi.UserProcessor.GetUserFollowersAsync(username, PaginationParameters.MaxPagesToLoad(MAX_PAGES_TO_LOAD)));
             getFollowersTask.Wait();
 
             IResult<InstaUserShortList> followers = getFollowersTask.Result;;
@@ -276,7 +273,7 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
 
             List<User> followersResult = new List<User>();
 
-            PaginationParameters pageParams = PaginationParameters.Empty;
+            PaginationParameters pageParams = PaginationParameters.MaxPagesToLoad(MAX_PAGES_TO_LOAD);
 
             IResult<InstaUserShortList> followers = await _instaApi.UserProcessor.GetUserFollowersAsync(username, pageParams);
 
@@ -352,7 +349,7 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
 
             long pk = Convert.ToInt64(primaryKey);
             List<InstagramPost> posts = new List<InstagramPost>();
-            PaginationParameters pageParams = PaginationParameters.Empty;
+            PaginationParameters pageParams = PaginationParameters.MaxPagesToLoad(MAX_PAGES_TO_LOAD);
 
             Task<IResult<InstaMediaList>> mediaListTask = Task.Run(() => _instaApi.UserProcessor.GetUserMediaByIdAsync(pk, pageParams));
             mediaListTask.Wait();
@@ -382,7 +379,7 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
 
             long pk = Convert.ToInt64(primaryKey);
             List<InstagramPost> posts = new List<InstagramPost>();
-            PaginationParameters pageParams = PaginationParameters.Empty;
+            PaginationParameters pageParams = PaginationParameters.MaxPagesToLoad(MAX_PAGES_TO_LOAD);
 
             IResult<InstaMediaList> mediaList = await _instaApi.UserProcessor.GetUserMediaByIdAsync(pk, pageParams);
 
