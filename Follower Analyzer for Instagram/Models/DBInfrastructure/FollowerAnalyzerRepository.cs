@@ -64,6 +64,11 @@ namespace Follower_Analyzer_for_Instagram.Models.DBInfrastructure
             }
         }
 
+        public int CountUsersUnderSupervision()
+        {
+            return context.UsersUnderSupervision.Count();
+        }
+
         public async Task<TEntity> GetAsync<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : class
         {
             TEntity entity = null;
