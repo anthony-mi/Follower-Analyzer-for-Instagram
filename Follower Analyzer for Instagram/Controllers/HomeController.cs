@@ -69,11 +69,6 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         {
             return View();
         }
-
-        public async Task<ActionResult> test()
-        {
-            return View("TestListUsersObserv",await _repository.GetListAsync<User>()) ;
-        }
    
         public async Task< JsonResult> AddUserToObservation(string userName)//+
         {
@@ -119,15 +114,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             return Json(subscribers);
         }
 
-        public ActionResult UsersUnderObservation()//-
-        {
-           // var usersUnderObservation = _repository
-
-
-            return View();//список пользователей под наблюденим
-        }
-
-        /// <summary>
+         /// <summary>
         /// завершить наблюдения за пользователем
         /// </summary>
         /// <param name="id"></param>
@@ -151,12 +138,6 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             return Json(string.Empty);
         }
 
-        public ActionResult GetAnalysisReport(int? id)//-
-        {
-
-
-            return View();// возращает страницу с отчетом о наблюдение за  пользователем
-        }
 
         public ActionResult TopTenLikes(string userName)
         {
