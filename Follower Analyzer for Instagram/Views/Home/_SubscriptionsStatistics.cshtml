@@ -1,0 +1,28 @@
+﻿@model Follower_Analyzer_for_Instagram.Models.ViewModels.SubscriptionsStatisticsViewModel
+
+<table cellpadding="0" cellspacing="0" border="0">
+    <tr>
+        <td valign="top"><b>New Subscriptions</b></td>
+        <td>
+            @if (Model != null && Model.NewSubscriptions != null)
+            {
+                <span>@Html.DisplayFor(model => model.NewSubscriptions.Count)</span>
+            }
+            else
+            {
+                <span>-</span>
+            }
+        </td>
+        <td valign="top"><b>Have Unfollowed Me</b></td>
+        <td>
+            @if (Model != null && Model.NewSubscriptions != null)
+            {
+                <span>@Html.DisplayFor(model => model.UnsubscribedSubscriptions.Count)</span>
+            }
+            else
+            {
+                <span>-</span>
+            }
+        </td>
+    </tr>
+</table>

@@ -47,11 +47,11 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         private byte[] GetInstagramCookiesByUserPrimaryKey(string primaryKey)
         {
             //User user = repository.GetAsync<User>(u => u.InstagramPK == primaryKey).Result;
-            var user = new User();
+            var user = new ApplicationUser();
 
             using (var dbContext = new FollowerAnalyzerContext())
             {
-                user = dbContext.Users.First(u => u.InstagramPK == primaryKey);
+                user = dbContext.ApplicationUsers.First(u => u.InstagramPK == primaryKey);
             }
 
             return user == null ? new byte[] { } : user.StateData;
@@ -82,7 +82,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
             if(authenticated)
             {
-                var newUser = new User();
+                var newUser = new ApplicationUser();
                 string primaryKey = _instagramAPI.GetCurrentUserPrimaryKey();
                 
                 if(string.IsNullOrEmpty(primaryKey))
@@ -95,19 +95,19 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 newUser.StateData = instagramUserCookies;
                 newUser.Username = model.Username;
 
-                var foundUser = await _repository.GetAsync<User>(u => u.InstagramPK == primaryKey);
+                var foundUser = await _repository.GetAsync<ApplicationUser>(u => u.InstagramPK == primaryKey);
 
                 if (foundUser == null)
                 {
                     newUser.LastUpdateDate = DateTime.Now;
-                    await _repository.CreateAsync<User>(newUser);
+                    await _repository.CreateAsync<ApplicationUser>(newUser);
                 }
                 else
                 {
                     foundUser.StateData = instagramUserCookies;
                     //Maybe user has been changed his username after last authorization
                     foundUser.Username = model.Username; 
-                    await _repository.UpdateAsync<User>(foundUser);
+                    await _repository.UpdateAsync<ApplicationUser>(foundUser);
                 }
 
                 Session["PrimaryKey"] = primaryKey;
@@ -137,7 +137,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
                 using (var dbContext = new FollowerAnalyzerContext())
                 {
-                    var user = dbContext.Users.First(u => u.InstagramPK == primaryKey);
+                    var user = dbContext.ApplicationUsers.First(u => u.InstagramPK == primaryKey);
                     user.StateData = new byte[] { };
                     await dbContext.SaveChangesAsync();
                 }
