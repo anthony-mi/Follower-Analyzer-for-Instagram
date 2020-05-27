@@ -44,11 +44,11 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         private byte[] GetInstagramCookiesByUserPrimaryKey(string primaryKey)
         {
             //User user = repository.GetAsync<User>(u => u.InstagramPK == primaryKey).Result;
-            var user = new User();
+            var user = new ApplicationUser();
 
             using (var dbContext = new FollowerAnalyzerContext())
             {
-                user = dbContext.Users.First(u => u.InstagramPK == primaryKey);
+                user = dbContext.ApplicationUsers.First(u => u.InstagramPK == primaryKey);
             }
 
             return user == null ? new byte[] { } : user.StateData;
@@ -219,34 +219,34 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             return View("Index", viewModel);
         }
 
-        public async Task<ActionResult> GetFollowersStatisticsAsync(string userPrimaryKey = null)
+        public async Task<ActionResult> GetSubscriptionsStatisticsAsync(string userPrimaryKey = null)
         {
             if(String.IsNullOrEmpty(userPrimaryKey))
                 userPrimaryKey = System.Web.HttpContext.Current.Session["PrimaryKey"].ToString();
-            var user = new User();
-            user = await _repository.GetAsync<User>(x => x.InstagramPK == userPrimaryKey);
-            var followersStatistics = new FollowersStatisticsViewModel();
+            var user = new ApplicationUser();
+            user = await _repository.GetAsync<ApplicationUser>(x => x.InstagramPK == userPrimaryKey);
+            var subscriptionsStatistics = new SubscriptionsStatisticsViewModel();
             // Get current followers list
-            List<User> currentFollowersList = await _instaApi.GetUserFollowersByUsernameAsync(user.Username);
+            List<ApplicationUser> currentSubscriptionsList = await _instaApi.GetUserSubscriptionsByUsernameAsync(user.Username);
             // Get unsubscribed followers
-            foreach(var follower in user.Followers)
+            foreach(var subscription in user.Subscriptions)
             {
-                if (!currentFollowersList.Contains(follower))
-                    followersStatistics.UnsubscribedFollowers.Add(follower);
+                if (!currentSubscriptionsList.Contains(subscription))
+                    subscriptionsStatistics.UnsubscribedSubscriptions.Add(subscription);
             }
             // Get new followers
-            foreach (var follower in currentFollowersList)
+            foreach (var subscription in currentSubscriptionsList)
             {
-                if (!user.Followers.Contains(follower))
-                    followersStatistics.NewFollowers.Add(follower);
+                if (!user.Subscriptions.Contains(subscription))
+                    subscriptionsStatistics.NewSubscriptions.Add(subscription);
             }
             //If there are changes, then save them in the database
-            if (followersStatistics.NewFollowers.Count > 0 || followersStatistics.UnsubscribedFollowers.Count > 0)
+            if (subscriptionsStatistics.NewSubscriptions.Count > 0 || subscriptionsStatistics.UnsubscribedSubscriptions.Count > 0)
             { 
-                user.Followers = currentFollowersList;
-                await _repository.UpdateAsync<User>(user);
+                user.Subscriptions = currentSubscriptionsList;
+                await _repository.UpdateAsync<ApplicationUser>(user);
             }
-            return PartialView("_FollowersStatistics", followersStatistics);
+            return PartialView("_SubscriptionsStatistics", subscriptionsStatistics);
         }
     }
 }

@@ -7,13 +7,13 @@ namespace Follower_Analyzer_for_Instagram.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class AddUserActivity1 : IMigrationMetadata
+    public sealed partial class NewDB : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddUserActivity1));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(NewDB));
         
         string IMigrationMetadata.Id
         {
-            get { return "202005270719441_AddUserActivity1"; }
+            get { return "202005271754429_NewDB"; }
         }
         
         string IMigrationMetadata.Source
