@@ -196,6 +196,10 @@
     <Compile Include="Migrations\202005271754429_NewDB.Designer.cs">
       <DependentUpon>202005271754429_NewDB.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202005272258011_ChangeFieldNameInUserActivity.cs" />
+    <Compile Include="Migrations\202005272258011_ChangeFieldNameInUserActivity.Designer.cs">
+      <DependentUpon>202005272258011_ChangeFieldNameInUserActivity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationUser.cs" />
@@ -362,6 +366,7 @@
     <Content Include="Scripts\popper-utils.js.map" />
     <Content Include="Views\Home\_SubscriptionsStatistics.cshtml" />
     <Content Include="Views\Home\ListPosts.cshtml" />
+    <Content Include="Views\Home\_ObservableUserActivities.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AppData\" />
@@ -380,6 +385,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202005271754429_NewDB.resx">
       <DependentUpon>202005271754429_NewDB.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005272258011_ChangeFieldNameInUserActivity.resx">
+      <DependentUpon>202005272258011_ChangeFieldNameInUserActivity.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
