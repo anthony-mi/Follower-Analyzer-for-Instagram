@@ -232,14 +232,14 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
             return posts;
         }
 
-        public List<User> GetUserFollowersByUsername(string username)
+        public List<ApplicationUser> GetUserFollowersByUsername(string username)
         {
             if(_instaApi == null)
             {
                 throw new NullReferenceException();
             }
 
-            List<User> followersResult = new List<User>();
+            List<ApplicationUser> followersResult = new List<ApplicationUser>();
 
             Task<IResult<InstaUserShortList>> getFollowersTask = Task.Run(
                 () => _instaApi.UserProcessor.GetUserFollowersAsync(username, PaginationParameters.MaxPagesToLoad(MAX_PAGES_TO_LOAD)));
@@ -251,7 +251,7 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
             {
                 Parallel.ForEach(followers.Value, (follower) =>
                 {
-                    User newUser = new User
+                    ApplicationUser newUser = new ApplicationUser
                     {
                         InstagramPK = follower.Pk.ToString(),
                         Username = follower.UserName
@@ -264,14 +264,14 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
             return followersResult;
         }
 
-        public async Task<List<User>> GetUserFollowersByUsernameAsync(string username)
+        public async Task<List<ApplicationUser>> GetUserFollowersByUsernameAsync(string username)
         {
             if (_instaApi == null)
             {
                 throw new NullReferenceException();
             }
 
-            List<User> followersResult = new List<User>();
+            List<ApplicationUser> followersResult = new List<ApplicationUser>();
 
             PaginationParameters pageParams = PaginationParameters.MaxPagesToLoad(MAX_PAGES_TO_LOAD);
 
@@ -281,7 +281,7 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
             {
                 Parallel.ForEach(followers.Value, (follower) =>
                 {
-                    User newUser = new User
+                    ApplicationUser newUser = new ApplicationUser
                     {
                         InstagramPK = follower.Pk.ToString(),
                         Username = follower.UserName
@@ -398,14 +398,14 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
             return posts;
         }
 
-        public List<User> GetUserSubscriptionsByUsername(string username)
+        public List<ApplicationUser> GetUserSubscriptionsByUsername(string username)
         {
             if (_instaApi == null)
             {
                 throw new NullReferenceException();
             }
 
-            List<User> subscriptionsResult = new List<User>();
+            List<ApplicationUser> subscriptionsResult = new List<ApplicationUser>();
 
             Task<IResult<InstaUserShortList>> getSubscriptionsTask = Task.Run(
                 () => _instaApi.UserProcessor.GetUserFollowingAsync(username, PaginationParameters.MaxPagesToLoad(MAX_PAGES_TO_LOAD)));
@@ -417,7 +417,7 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
             {
                 Parallel.ForEach(subscriptions.Value, (profile) =>
                 {
-                    User newProfile = new User
+                    ApplicationUser newProfile = new ApplicationUser
                     {
                         InstagramPK = profile.Pk.ToString(),
                         Username = profile.UserName
@@ -430,14 +430,14 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
             return subscriptionsResult;
         }
 
-        public async Task<List<User>> GetUserSubscriptionsByUsernameAsync(string username)
+        public async Task<List<ApplicationUser>> GetUserSubscriptionsByUsernameAsync(string username)
         {
             if (_instaApi == null)
             {
                 throw new NullReferenceException();
             }
 
-            List<User> subscriptionsResult = new List<User>();
+            List<ApplicationUser> subscriptionsResult = new List<ApplicationUser>();
 
             PaginationParameters pageParams = PaginationParameters.MaxPagesToLoad(MAX_PAGES_TO_LOAD);
 
@@ -447,7 +447,7 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
             {
                 Parallel.ForEach(subscriptions.Value, (profile) =>
                 {
-                    User newProfile = new User
+                    ApplicationUser newProfile = new ApplicationUser
                     {
                         InstagramPK = profile.Pk.ToString(),
                         Username = profile.UserName
