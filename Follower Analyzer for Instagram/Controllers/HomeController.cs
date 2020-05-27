@@ -2,6 +2,8 @@
 using Follower_Analyzer_for_Instagram.Models.DBInfrastructure;
 using Follower_Analyzer_for_Instagram.Models.ViewModels;
 using Follower_Analyzer_for_Instagram.Services.InstagramAPI;
+using InstagramApiSharp.Classes;
+using Microsoft.Ajax.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Drawing2D;
@@ -73,42 +75,80 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             return View("TestListUsersObserv",await _repository.GetListAsync<User>()) ;
         }
    
-        public JsonResult AddUserToObservation(string userName)//-
+        public async Task< JsonResult> AddUserToObservation(string userName)//+
         {
-            //string primaryKey =_instaApi.GetPrimaryKeyByUsername(userName);
-            Models.User user = new User();
-            user.Followers = _instaApi.GetUserFollowersByUsername(userName);
-           
-            bool added = false;
-            //_repository.AddUserUnderSupervision()
+            List<string> errors = new List<string>();
+            ObservableUser observableUser = new ObservableUser();
 
+            if ((await _repository.GetListAsync<ObservableUser>()).ToList().Count() < 4)
+            {
+                observableUser.InstagramPK = _instaApi.GetPrimaryKeyByUsername(userName);
+                observableUser.Username = userName;
+                bool added = await _repository.CreateAsync(observableUser);
 
+                if (!added)
+                {
+                    errors.Add( "Не удалось добавить пользователя!");
+                 
+                    Response.StatusCode = 404;//not found
+                }
+                else
+                {
+                    Response.StatusCode = 200;//ok
+                }
+            }
+            else
+            {
+                errors.Add("Не удалось добавить пользователя!");
+                errors.Add("Максимальное количесво пользователей за которыми возможно наблюдение [3]!");
+                observableUser = null;
+                Response.StatusCode = 303;//See Other 
 
-
+            }
 
             return Json(new {
-                User="Ivan",
-                Error = "User not added!" });//test
-             //Добавление нового пользователя для наблюдения
+                observableUser = observableUser,
+                Errors = errors
+            });
         }
 
         public JsonResult GetSubscribersCurrentUser()//+
         {
-           List<User> subscribers = _instaApi.GetUserFollowersByUsername(Session["UserName"].ToString());
+           List<ApplicationUser> subscribers = _instaApi.GetUserFollowersByUsername(Session["UserName"].ToString());
           
             return Json(subscribers);
         }
 
         public ActionResult UsersUnderObservation()//-
         {
+           // var usersUnderObservation = _repository
+
+
             return View();//список пользователей под наблюденим
         }
 
-        public ActionResult FinishUserMonitoring(int? id)//-
+        /// <summary>
+        /// завершить наблюдения за пользователем
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task< JsonResult> FinishUserMonitoring(int? id)//+
         {
+            var observableUsers = (await _repository.GetListAsync<ObservableUser>()).ToList());
+            var observableUser = observableUsers.Where(user => user.Id == id).FirstOrDefault();
 
+            bool deleted = await _repository.DeleteAsync<ObservableUser>(observableUser);
 
-            return View();//завершение наблюдения за пользователем
+            if(!deleted)
+            {
+                Response.StatusCode = 500;//Internal Server Error
+            }
+            else
+            {
+                Response.StatusCode = 200;//Ok
+            }
+
+            return Json(string.Empty);
         }
 
         public ActionResult GetAnalysisReport(int? id)//-
