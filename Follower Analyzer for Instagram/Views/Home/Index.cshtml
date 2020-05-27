@@ -4,42 +4,54 @@
     ViewBag.Title = "Home Page";
 }
 
-<div class="container my-5">
-    @using (Html.BeginForm("GetMostPopularPosts", "Home", FormMethod.Get, new { @class = "form-signin mt-5" }))
-    {
-        <div class="row">
+@*<div class="container my-5">
+        <input type="submit" class="btn btn-info mr-2 px-4" id="getFollowersStatistic" value="Get followers statistic" />
+        <div id="dialog" style="display: none">
+        </div>
+    </div>*@
+
+
+<div class="row">
+    <div class="col-md-2 ml-5">
+        <p class="pt-5 font-weight-bold">Get most popular posts</p>
+        @using (Html.BeginForm("GetMostPopularPosts", "Home", FormMethod.Get, new { @class = "form-signin" }))
+        {
             @Html.TextBoxFor(Model => Model.Username,
          new
          {
-             @class = "form-control col-5 mr-2",
-             placeholder = "Please, enter instagram username here",
+             @class = "custom-form-control",
+             placeholder = "username",
              required = "required",
              id = "inputDefault"
          })
-            <input type="submit" class="btn btn-info mr-2 px-4" value="Get most popular posts" />
-            @*<input type="button" class="btn btn-info mr-2 px-4" value="Comments" />
-                <input type="button" class="btn btn-danger mr-2 px-5" value="Likes" />*@
-        </div>
-    }
+            <input type="submit" id="getMostPopularPosts" class="btn btn-info" value="Go" />
+        }
 
 
-</div>
-@if (Model.Posts != null && Model.Posts.Count != 0)
-{
-    <div class="py-5 bg-light">
-        <div class="container">
-            <div class="row">
+    </div>
+    @if (Model.Posts != null && Model.Posts.Count != 0)
+    {
+        <div class="container py-5">
+            <div class="row m-auto">
                 @foreach (Follower_Analyzer_for_Instagram.Models.InstagramPost post in Model.Posts)
                 {
-                    <div class="card col-md-4 py-4">
-                        <img style="height: 200px; width: 100%; display: block;" src="@post.MediaFileUri" alt="Instagram media file">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">Likes: @post.CountOfLikes</li>
-                            <li class="list-group-item">Comments: @post.CountOfComments</li>
-                        </ul>
+                    <div class="col-md-6 p-2">
+                        <div class="text-center font-weight-bold">
+                            @post.CountOfLikes
+                            <svg class="bi bi-heart-fill mr-2" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z" />
+                            </svg>
+                            @post.CountOfComments
+                            <svg class="bi bi-chat-square-dots-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.5a1 1 0 0 0-.8.4l-1.9 2.533a1 1 0 0 1-1.6 0L5.3 12.4a1 1 0 0 0-.8-.4H2a2 2 0 0 1-2-2V2zm5 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                            </svg>
+                        </div>
+                        <div class="mx-auto text-center my-2">
+                            <img class="h-75 w-75" src="@post.MediaFileUri" alt="Instagram media file">
+                        </div>
                     </div>
                 }
             </div>
         </div>
-    </div>
-}
+    }
+</div>
