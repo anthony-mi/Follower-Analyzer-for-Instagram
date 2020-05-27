@@ -362,6 +362,7 @@
     <Content Include="Scripts\popper-utils.js.map" />
     <Content Include="Views\Home\_SubscriptionsStatistics.cshtml" />
     <Content Include="Views\Home\ListPosts.cshtml" />
+    <Content Include="Views\Home\_ObservableUserActivities.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AppData\" />

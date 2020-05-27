@@ -5,6 +5,7 @@ using Follower_Analyzer_for_Instagram.Services.InstagramAPI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -195,6 +196,17 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 await _repository.UpdateAsync<ApplicationUser>(user);
             }
             return PartialView("_SubscriptionsStatistics", subscriptionsStatistics);
+        }
+
+        public async Task<ActionResult> GetObservableUserActivities(string userName)
+        {
+            UserActivityViewModel activities = new UserActivityViewModel();
+            activities.UserName = userName;
+            string primaryKey = _instaApi.GetPrimaryKeyByUsername(userName);
+            activities.ProfilePictureUrl = await _instaApi.GetUserProfilePictureUriByPrimaryKeyAsync(primaryKey);
+            List<UserActivity> userActivities = (await _repository.GetListAsync<UserActivity>(x => x.InitiatorPrimaryKey == primaryKey)).ToList<UserActivity>();
+            activities.Activities = userActivities;
+            return PartialView("_ObservableUserActivities", activities);
         }
     }
 }
