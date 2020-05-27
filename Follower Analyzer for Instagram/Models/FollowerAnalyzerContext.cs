@@ -12,5 +12,6 @@ namespace Follower_Analyzer_for_Instagram.Models
         //public FollowerAnalyzerContext() : base("FollowerAnalyzerExpressConnection") { }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<UserActivity> UserActivities { get; set; }
     }
 }
