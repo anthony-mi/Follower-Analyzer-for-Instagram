@@ -196,6 +196,10 @@
     <Compile Include="Migrations\202005272354175_BagFixing.Designer.cs">
       <DependentUpon>202005272354175_BagFixing.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202005280436272_ActivityAnalizing.cs" />
+    <Compile Include="Migrations\202005280436272_ActivityAnalizing.Designer.cs">
+      <DependentUpon>202005280436272_ActivityAnalizing.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationUser.cs" />
@@ -210,6 +214,8 @@
     <Compile Include="Models\ViewModels\SubscriptionsStatisticsViewModel.cs" />
     <Compile Include="Models\ViewModels\UserActivityViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ActivityAnalizer\ActivityAnalizer.cs" />
+    <Compile Include="Services\ActivityAnalizer\IActivityAnalizer.cs" />
     <Compile Include="Services\InstagramAPI\IInstagramAPI.cs" />
     <Compile Include="Services\InstagramAPI\InstagramAPI.cs" />
     <Compile Include="Startup.cs" />
@@ -381,6 +387,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202005272354175_BagFixing.resx">
       <DependentUpon>202005272354175_BagFixing.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005280436272_ActivityAnalizing.resx">
+      <DependentUpon>202005280436272_ActivityAnalizing.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

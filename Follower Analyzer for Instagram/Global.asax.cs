@@ -19,5 +19,10 @@ namespace Follower_Analyzer_for_Instagram
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
+
+        void Application_End(object sender, EventArgs e)
+        {
+            Startup.ActivityAnalizingCancellationTokenSource.Cancel();
+        }
     }
 }
