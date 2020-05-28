@@ -2,11 +2,16 @@
 using Follower_Analyzer_for_Instagram.Models.DBInfrastructure;
 using Follower_Analyzer_for_Instagram.Models.ViewModels;
 using Follower_Analyzer_for_Instagram.Services.InstagramAPI;
+using InstagramApiSharp.Classes;
+using Microsoft.Ajax.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
 
 namespace Follower_Analyzer_for_Instagram.Controllers
@@ -65,6 +70,75 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         {
             return View();
         }
+   
+        public async Task< JsonResult> AddUserToObservation(string userName)//+
+        {
+            List<string> errors = new List<string>();
+            ObservableUser observableUser = new ObservableUser();
+
+            if ((await _repository.GetListAsync<ObservableUser>()).ToList().Count() < 4)
+            {
+                observableUser.InstagramPK = _instaApi.GetPrimaryKeyByUsername(userName);
+                observableUser.Username = userName;
+                bool added = await _repository.CreateAsync(observableUser);
+
+                if (!added)
+                {
+                    errors.Add( "Не удалось добавить пользователя!");
+                 
+                    Response.StatusCode = 404;//not found
+                }
+                else
+                {
+                    Response.StatusCode = 200;//ok
+                }
+            }
+            else
+            {
+                errors.Add("Не удалось добавить пользователя!");
+                errors.Add("Максимальное количесво пользователей за которыми возможно наблюдение [3]!");
+                observableUser = null;
+                Response.StatusCode = 303;//See Other 
+
+            }
+
+            return Json(new {
+                observableUser = observableUser,
+                Errors = errors
+            });
+        }
+
+        public JsonResult GetSubscribersCurrentUser()//+
+        {
+           List<ApplicationUser> subscribers = _instaApi.GetUserFollowersByUsername(Session["UserName"].ToString());
+          
+            return Json(subscribers);
+        }
+
+         /// <summary>
+        /// завершить наблюдения за пользователем
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<JsonResult> FinishUserMonitoring(int? id)//+
+        {
+            var observableUsers = (await _repository.GetListAsync<ObservableUser>()).ToList();
+            var observableUser = observableUsers.Where(user => user.Id == id).FirstOrDefault();
+
+            bool deleted = await _repository.DeleteAsync<ObservableUser>(observableUser);
+
+            if(!deleted)
+            {
+                Response.StatusCode = 500;//Internal Server Error
+            }
+            else
+            {
+                Response.StatusCode = 200;//Ok
+            }
+
+            return Json(string.Empty);
+        }
+
 
         public ActionResult TopTenLikes(string userName)
         {
@@ -186,6 +260,17 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 await _repository.UpdateAsync<ApplicationUser>(user);
             }
             return PartialView("_SubscriptionsStatistics", subscriptionsStatistics);
+        }
+
+        public async Task<ActionResult> GetObservableUserActivities(string userName)
+        {
+            UserActivityViewModel activities = new UserActivityViewModel();
+            activities.UserName = userName;
+            string primaryKey = _instaApi.GetPrimaryKeyByUsername(userName);
+            activities.ProfilePictureUrl = await _instaApi.GetUserProfilePictureUriByPrimaryKeyAsync(primaryKey);
+            List<UserActivity> userActivities = (await _repository.GetListAsync<UserActivity>(x => x.InitiatorPrimaryKey == primaryKey)).ToList<UserActivity>();
+            activities.Activities = userActivities;
+            return PartialView("_ObservableUserActivities", activities);
         }
     }
 }

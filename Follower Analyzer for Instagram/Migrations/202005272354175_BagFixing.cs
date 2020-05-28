@@ -3,7 +3,7 @@ namespace Follower_Analyzer_for_Instagram.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class NewDB : DbMigration
+    public partial class BagFixing : DbMigration
     {
         public override void Up()
         {
@@ -40,7 +40,7 @@ namespace Follower_Analyzer_for_Instagram.Migrations
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        TargetUserPrimaryKey = c.String(),
+                        TargetUserName = c.String(),
                         InitiatorPrimaryKey = c.String(),
                         EventDate = c.DateTime(nullable: false),
                         LinkToMedia = c.String(),

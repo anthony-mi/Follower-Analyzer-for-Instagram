@@ -11,10 +11,11 @@ namespace Follower_Analyzer_for_Instagram.Models
         Like,
         Comment
     }
+
     public class UserActivity
     {
         public int Id { get; set; }
-        public string TargetUserPrimaryKey { get; set; }
+        public string TargetUserName { get; set; }
         public string InitiatorPrimaryKey { get; set; }
         public DateTime EventDate { get; set; }
         public string LinkToMedia { get; set; }

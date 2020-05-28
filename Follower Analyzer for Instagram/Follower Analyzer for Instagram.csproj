@@ -192,9 +192,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\AutofacConfig.cs" />
-    <Compile Include="Migrations\202005271754429_NewDB.cs" />
-    <Compile Include="Migrations\202005271754429_NewDB.Designer.cs">
-      <DependentUpon>202005271754429_NewDB.cs</DependentUpon>
+    <Compile Include="Migrations\202005272354175_BagFixing.cs" />
+    <Compile Include="Migrations\202005272354175_BagFixing.Designer.cs">
+      <DependentUpon>202005272354175_BagFixing.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -257,8 +257,6 @@
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
-    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
-    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -364,7 +362,7 @@
     <Content Include="Scripts\popper-utils.js.map" />
     <Content Include="Views\Home\_SubscriptionsStatistics.cshtml" />
     <Content Include="Views\Home\ListPosts.cshtml" />
-    <Content Include="Views\Home\GetMostPopularPosts.cshtml" />
+    <Content Include="Views\Home\_ObservableUserActivities.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AppData\" />
@@ -381,8 +379,8 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202005271754429_NewDB.resx">
-      <DependentUpon>202005271754429_NewDB.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202005272354175_BagFixing.resx">
+      <DependentUpon>202005272354175_BagFixing.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
