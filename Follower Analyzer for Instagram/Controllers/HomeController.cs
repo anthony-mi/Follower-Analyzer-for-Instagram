@@ -264,13 +264,13 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
         public async Task<ActionResult> GetObservableUserActivities(string userName)
         {
-            UserActivityViewModel activities = new UserActivityViewModel();
+            var activities = new UserActivityViewModel();
             activities.UserName = userName;
             string primaryKey = _instaApi.GetPrimaryKeyByUsername(userName);
             activities.ProfilePictureUrl = await _instaApi.GetUserProfilePictureUriByPrimaryKeyAsync(primaryKey);
             List<UserActivity> userActivities = (await _repository.GetListAsync<UserActivity>(x => x.InitiatorPrimaryKey == primaryKey)).ToList<UserActivity>();
             activities.Activities = userActivities;
-            return PartialView("_ObservableUserActivities", activities);
+            return PartialView(activities);
         }
 
         [HttpGet]
