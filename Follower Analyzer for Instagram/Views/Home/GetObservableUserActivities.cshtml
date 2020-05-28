@@ -1,0 +1,50 @@
+﻿@model Follower_Analyzer_for_Instagram.Models.ViewModels.UserActivityViewModel
+
+@if (Model != null)
+{
+    <div class="container py-5 ml-5">
+        <div class="row m-auto">
+            <div class="col-md-6 p-2">
+                <div class="mx-auto text-center my-2">
+                    <img class="h-75 w-75" src="@Model.ProfilePictureUrl" alt="Instagram media file">
+                </div>
+                <div class="text-center font-weight-bold">
+                    @Model.UserName
+                    <svg class="bi bi-person-bounding-box" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1h-3zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5zM.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5z" />
+                        <path fill-rule="evenodd" d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                    </svg>
+                </div>
+            </div>
+            @if (Model.Activities != null)
+            {
+                <div class="col-md-6 p-2 mx-auto text-center my-2">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Event date</th>
+                                <th scope="col">Activity type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Activities.Count <= 0)
+                            {
+                                <tr class="table-secondary">
+                                    <th scope="row">-</th>
+                                    <td>-</td>
+                                </tr>
+                            }
+                            @foreach (var activity in Model.Activities)
+                            {
+                                <tr class="table-secondary">
+                                    <th scope="row">@activity.EventDate</th>
+                                    <td>@activity.ActivityType</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+}

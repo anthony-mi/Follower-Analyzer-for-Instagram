@@ -369,7 +369,7 @@
     <Content Include="Scripts\popper-utils.js.map" />
     <Content Include="Views\Home\GetSubscriptionsStatisticsAsync.cshtml" />
     <Content Include="Views\Home\ListPosts.cshtml" />
-    <Content Include="Views\Home\_ObservableUserActivities.cshtml" />
+    <Content Include="Views\Home\GetObservableUserActivities.cshtml" />
     <Content Include="Views\Home\GetMostPopularPosts.cshtml" />
     <Content Include="Views\Home\TestListUsersObserv.cshtml" />
     <Content Include="Views\Home\TopTenLikes.cshtml" />
