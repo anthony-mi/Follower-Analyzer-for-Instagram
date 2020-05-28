@@ -289,6 +289,12 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 return RedirectToAction("Index", new { status = "repeat" });
             if (!await _repository.CreateAsync<ObservableUser>(user))
                 return RedirectToAction("Index", new { status = "bad" });
+
+            ApplicationUser observer = new ApplicationUser();
+            observer.InstagramPK = System.Web.HttpContext.Current.Session["PrimaryKey"].ToString();
+
+            Startup.ActivityAnalizer.AddUserForObservation(observer, user);
+
             return RedirectToAction("Index", new { status = "success" }); ;
         }
 
