@@ -12,6 +12,18 @@
             <input type="text" name="name" class="custom-form-control" placeholder="username" required />
             <input type="submit" class="btn btn-info" id="getMostPopularPosts" value="Go" />
         }
+        <p class="pt-5 font-weight-bold">Get top ten likes</p>
+        @using (Ajax.BeginForm("TopTenLikes", new AjaxOptions { UpdateTargetId = "results" }))
+        {
+            <input type="text" name="nameForLikes" class="custom-form-control" placeholder="username" required />
+            <input type="submit" class="btn btn-info" id="getTopTenLikes" value="Go" />
+        }
+        <p class="pt-5 font-weight-bold">Get top ten сomments</p>
+        @using (Ajax.BeginForm("TopTenByComments", new AjaxOptions { UpdateTargetId = "results" }))
+        {
+            <input type="text" name="nameForComments" class="custom-form-control" placeholder="username" required />
+            <input type="submit" class="btn btn-info" id="getTopTenComments" value="Go" />
+        }
     </div>
     <div id="results"></div>
     <div id="tempo" class="container py-5">
