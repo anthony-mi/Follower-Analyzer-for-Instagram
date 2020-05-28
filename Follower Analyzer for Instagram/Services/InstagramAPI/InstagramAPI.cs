@@ -134,7 +134,9 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
                 {
                     InstagramPost post = new InstagramPost();
                     post.CountOfComments = Convert.ToInt32(media.CommentsCount);
+                    post.Commenters = GetPostCommenters(media);
                     post.CountOfLikes = Convert.ToInt32(media.LikesCount);
+                    post.Likers = GetPostLikers(media);
                     post.MediaFileUri = GetUri(media);
                     posts.Add(post);
                 });
@@ -223,7 +225,9 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
                 {
                     InstagramPost post = new InstagramPost();
                     post.CountOfComments = Convert.ToInt32(media.CommentsCount);
+                    post.Commenters = GetPostCommenters(media);
                     post.CountOfLikes = Convert.ToInt32(media.LikesCount);
+                    post.Likers = GetPostLikers(media);
                     post.MediaFileUri = GetUri(media);
                     posts.Add(post);
                 });
@@ -361,7 +365,9 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
                 {
                     InstagramPost post = new InstagramPost();
                     post.CountOfComments = Convert.ToInt32(media.CommentsCount);
+                    post.Commenters = GetPostCommenters(media);
                     post.CountOfLikes = Convert.ToInt32(media.LikesCount);
+                    post.Likers = GetPostLikers(media);
                     post.MediaFileUri = GetUri(media);
                     posts.Add(post);
                 });
@@ -389,13 +395,45 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
                 {
                     InstagramPost post = new InstagramPost();
                     post.CountOfComments = Convert.ToInt32(media.CommentsCount);
+                    post.Commenters = GetPostCommenters(media);
                     post.CountOfLikes = Convert.ToInt32(media.LikesCount);
+                    post.Likers = GetPostLikers(media);
                     post.MediaFileUri = GetUri(media);
                     posts.Add(post);
                 });
             }
 
             return posts;
+        }
+
+        private List<User> GetPostCommenters(InstaMedia media)
+        {
+            var commenters = new List<User>();
+
+            foreach (var comment in media.PreviewComments)
+            {
+                var newUser = new User();
+                newUser.InstagramPK = comment.User.Pk.ToString();
+                newUser.Username = comment.User.UserName;
+                commenters.Add(newUser);
+            }
+
+            return commenters;
+        }
+
+        private List<User> GetPostLikers(InstaMedia media)
+        {
+            var likers = new List<User>();
+
+            foreach(var liker in media.Likers)
+            {
+                var newUser = new User();
+                newUser.InstagramPK = liker.Pk.ToString();
+                newUser.Username = liker.UserName;
+                likers.Add(newUser);
+            }
+
+            return likers;
         }
 
         public List<ApplicationUser> GetUserSubscriptionsByUsername(string username)
