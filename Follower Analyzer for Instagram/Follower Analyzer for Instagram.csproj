@@ -211,6 +211,7 @@
     <Compile Include="Models\ViewModels\InstagramPost.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\ViewModels\IndexViewModel.cs" />
+    <Compile Include="Models\ViewModels\ObservableUserViewModel.cs" />
     <Compile Include="Models\ViewModels\SubscriptionsStatisticsViewModel.cs" />
     <Compile Include="Models\ViewModels\UserActivityViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -366,9 +367,17 @@
     <Content Include="Scripts\popper.js.map" />
     <Content Include="Scripts\popper-utils.min.js.map" />
     <Content Include="Scripts\popper-utils.js.map" />
-    <Content Include="Views\Home\_SubscriptionsStatistics.cshtml" />
+    <Content Include="Views\Home\GetSubscriptionsStatisticsAsync.cshtml" />
     <Content Include="Views\Home\ListPosts.cshtml" />
     <Content Include="Views\Home\_ObservableUserActivities.cshtml" />
+    <Content Include="Views\Home\GetMostPopularPosts.cshtml" />
+    <Content Include="Views\Home\TestListUsersObserv.cshtml" />
+    <Content Include="Views\Home\TopTenLikes.cshtml" />
+    <Content Include="Views\Home\TopTenByComments.cshtml" />
+    <Content Include="Views\Home\_AddObservableUser.cshtml" />
+    <Content Include="Views\Home\_BadResponse.cshtml" />
+    <Content Include="Views\Home\_RepeatItemPartial.cshtml" />
+    <Content Include="Views\Home\_SuccessPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AppData\" />

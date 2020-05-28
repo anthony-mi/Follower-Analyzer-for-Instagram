@@ -57,12 +57,12 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             return user == null ? new byte[] { } : user.StateData;
         }
 
-        public ActionResult Index()
+        public ActionResult Index(string status = "")
         {
             var viewModel = new IndexViewModel();
             viewModel.Username = string.Empty;
             viewModel.Posts = new List<InstagramPost>();
-
+            ViewBag.RequestState = status;
             return View(viewModel);
         }
 
@@ -140,10 +140,10 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         }
 
 
-        public ActionResult TopTenLikes(string userName)
+        public ActionResult TopTenLikes(string nameForLikes)
         {
-            var posts = _instaApi.GetUserPostsByUsername(userName);
-            var sortPosts = from post in posts orderby post.CountOfLikes select post;
+            var posts = _instaApi.GetUserPostsByUsername(nameForLikes);
+            var sortPosts = from post in posts orderby post.CountOfLikes descending select post;
             var topTenPosts = new List<InstagramPost>();
             int counter = 0;
 
@@ -154,19 +154,19 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                     topTenPosts.Add(post);
                 }
 
-                if (counter == 10)
+                if (counter == 9)
                 {
                     break;
                 }
                 counter++;
             }
-            return View("ListPosts", topTenPosts);
+            return PartialView(topTenPosts);
         }
 
-        public ActionResult TopTenByComments(string userName)
+        public ActionResult TopTenByComments(string nameForComments)
         {
-            var posts = _instaApi.GetUserPostsByUsername(userName);
-            var sortPosts = from post in posts orderby post.CountOfComments select post;
+            var posts = _instaApi.GetUserPostsByUsername(nameForComments);
+            var sortPosts = from post in posts orderby post.CountOfComments descending select post;
             var topTenPosts = new List<InstagramPost>();
             int counter = 0;
 
@@ -177,13 +177,13 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                     topTenPosts.Add(post);
                 }
 
-                if (counter == 10)
+                if (counter == 9)
                 {
                     break;
                 }
                 counter++;
             }
-            return View("ListPosts", topTenPosts);
+            return PartialView(topTenPosts);
         }
 
         public ActionResult SortingPostsDescOrder()
@@ -259,7 +259,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 user.Subscriptions = currentSubscriptionsList;
                 await _repository.UpdateAsync<ApplicationUser>(user);
             }
-            return PartialView("_SubscriptionsStatistics", subscriptionsStatistics);
+            return PartialView(subscriptionsStatistics);
         }
 
         public async Task<ActionResult> GetObservableUserActivities(string userName)
@@ -271,6 +271,39 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             List<UserActivity> userActivities = (await _repository.GetListAsync<UserActivity>(x => x.InitiatorPrimaryKey == primaryKey)).ToList<UserActivity>();
             activities.Activities = userActivities;
             return PartialView("_ObservableUserActivities", activities);
+        }
+
+        [HttpGet]
+        public ActionResult AddObservableUser()
+        {
+            return PartialView("_AddObservableUser");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AddObservableUser(ObservableUserViewModel observableUser)
+        {
+            ObservableUser user = new ObservableUser();
+            user.Username = observableUser.UserName; 
+            user.InstagramPK = _instaApi.GetPrimaryKeyByUsername(observableUser.UserName);
+            if (await _repository.GetAsync<ObservableUser>(x=>x.InstagramPK == user.InstagramPK) != null)
+                return RedirectToAction("Index", new { status = "repeat" });
+            if (!await _repository.CreateAsync<ObservableUser>(user))
+                return RedirectToAction("Index", new { status = "bad" });
+            return RedirectToAction("Index", new { status = "success" }); ;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> AddObservablePageForObservableUser()
+        {
+
+            return PartialView();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AddObservablePageForObservableUser(string observablePageUserName, string observableUserUsername)
+        {
+
+            return PartialView();
         }
     }
 }

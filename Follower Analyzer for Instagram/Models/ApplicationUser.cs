@@ -18,6 +18,7 @@ namespace Follower_Analyzer_for_Instagram.Models
 
         public ApplicationUser()
         {
+            ObservableAccaunts = new List<ObservableUser>();
             Subscriptions = new List<ApplicationUser>();
         }
     }

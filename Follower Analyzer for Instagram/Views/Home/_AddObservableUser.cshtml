@@ -1,0 +1,35 @@
+﻿@model Follower_Analyzer_for_Instagram.Models.ViewModels.ObservableUserViewModel
+
+    @using System.Web.Optimization
+    @Scripts.Render("~/bundles/jqueryval")
+    <div class="modal-content">
+        <div class="modal-header bg-dark">
+            <h5 class="modal-title text-white-50" id="dialogModalLabel">Add user to observation</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            @using (Html.BeginForm("AddObservableUser", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-horizontal">
+                    <h4>Observable User</h4>
+                    <hr />
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.UserName, "UserName", htmlAttributes: new { @class = "control-label col-md-2 font-weight-bolder" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <input type="submit" value="Add user" class="btn btn-info" />
+                    </div>
+                </div>
+            }
+        </div>
+    </div>

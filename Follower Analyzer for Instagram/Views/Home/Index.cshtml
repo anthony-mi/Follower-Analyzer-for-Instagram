@@ -12,6 +12,26 @@
             <input type="text" name="name" class="custom-form-control" placeholder="username" required />
             <input type="submit" class="btn btn-info" id="getMostPopularPosts" value="Go" />
         }
+        <p class="pt-5 font-weight-bold">Get top ten likes</p>
+        @using (Ajax.BeginForm("TopTenLikes", new AjaxOptions { UpdateTargetId = "results" }))
+        {
+            <input type="text" name="nameForLikes" class="custom-form-control" placeholder="username" required />
+            <input type="submit" class="btn btn-info" id="getTopTenLikes" value="Go" />
+        }
+        <p class="pt-5 font-weight-bold">Get top ten сomments</p>
+        @using (Ajax.BeginForm("TopTenByComments", new AjaxOptions { UpdateTargetId = "results" }))
+        {
+            <input type="text" name="nameForComments" class="custom-form-control" placeholder="username" required />
+            <input type="submit" class="btn btn-info" id="getTopTenComments" value="Go" />
+        }
+        <p class="pt-5"></p>
+        @using (Ajax.BeginForm("GetSubscriptionsStatisticsAsync", new AjaxOptions { UpdateTargetId = "statistic" }))
+        {
+            <input type="submit" class="btn btn-danger px-3" id="getSubscriptionsStatistics" value="Get subscription's statistic" />
+        }
+        <div id="statistic"></div>
+        @Html.ActionLink("Add user to observation", "AddObservableUser", "Home", new { @class = "btn form-control btn-info viewDialog mt-4" })
+        @Html.ActionLink("Add content to observation", "AddObservablePageForObservableUser", "Home", new { @class = "btn form-control btn-info mt-3 viewDialog" })
     </div>
     <div id="results"></div>
     <div id="tempo" class="container py-5">
@@ -19,3 +39,57 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="modDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div id="dialogContent" class="modal-dialog" role="document">
+
+    </div>
+</div>
+
+
+<div id="response" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        @{ if (ViewBag.RequestState == "bad")
+            {
+                Html.RenderPartial("_BadFormatPartial");
+            }
+            else if (ViewBag.RequestState == "success")
+            {
+                Html.RenderPartial("_SuccessPartial");
+            }
+            else if (ViewBag.RequestState == "repeat")
+            {
+                Html.RenderPartial("_RepeatItemPartial");
+            }
+            else if (ViewBag.RequestState == "required")
+            {
+                Html.RenderPartial("_RequiredPartial");
+            }
+        }
+    </div>
+</div>
+
+@if (ViewBag.RequestState != "")
+{
+    <script>
+        $(document).ready(function () {
+            $('#response').modal('show');
+        });
+    </script>
+}
+
+
+
+<script type="text/javascript">
+    $(function () {
+        $.ajaxSetup({ cache: false });
+        $(".viewDialog").click(function (e) {
+
+            e.preventDefault();
+            $.get(this.href, function (data) {
+                $('#dialogContent').html(data);
+                $('#modDialog').modal('show');
+            });
+        });
+    });
+</script>
