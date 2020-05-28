@@ -259,7 +259,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 user.Subscriptions = currentSubscriptionsList;
                 await _repository.UpdateAsync<ApplicationUser>(user);
             }
-            return PartialView("_SubscriptionsStatistics", subscriptionsStatistics);
+            return PartialView(subscriptionsStatistics);
         }
 
         public async Task<ActionResult> GetObservableUserActivities(string userName)

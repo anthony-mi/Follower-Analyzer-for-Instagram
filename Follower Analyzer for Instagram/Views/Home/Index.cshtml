@@ -24,6 +24,12 @@
             <input type="text" name="nameForComments" class="custom-form-control" placeholder="username" required />
             <input type="submit" class="btn btn-info" id="getTopTenComments" value="Go" />
         }
+        <p class="pt-5"></p>
+        @using (Ajax.BeginForm("GetSubscriptionsStatisticsAsync", new AjaxOptions { UpdateTargetId = "statistic" }))
+        {
+            <input type="submit" class="btn btn-danger px-3" id="getSubscriptionsStatistics" value="Get subscription's statistic" />
+        }
+        <div id="statistic"></div>
     </div>
     <div id="results"></div>
     <div id="tempo" class="container py-5">
