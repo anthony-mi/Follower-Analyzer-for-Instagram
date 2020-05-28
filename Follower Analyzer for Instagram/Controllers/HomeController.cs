@@ -286,12 +286,12 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             user.Username = observableUser.UserName; 
             user.InstagramPK = _instaApi.GetPrimaryKeyByUsername(observableUser.UserName);
             if (await _repository.GetAsync<ObservableUser>(x=>x.InstagramPK == user.InstagramPK) != null)
-                return RedirectToAction("Index", new { status = "repeat" });
+                return RedirectToAction("Index", new { status = "repeat" }); // TODO: return text "user is already observable"
             if (!await _repository.CreateAsync<ObservableUser>(user))
                 return RedirectToAction("Index", new { status = "bad" });
 
-            ApplicationUser observer = new ApplicationUser();
-            observer.InstagramPK = System.Web.HttpContext.Current.Session["PrimaryKey"].ToString();
+            string primaryKey = System.Web.HttpContext.Current.Session["PrimaryKey"].ToString();
+            var observer = await _repository.GetAsync<ApplicationUser>(u => u.InstagramPK == primaryKey);
 
             Startup.ActivityAnalizer.AddUserForObservation(observer, user);
 
