@@ -272,5 +272,20 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
         {
             throw new NotImplementedException();
         }
+
+        public void AddTargetUserToObservable(ApplicationUser observer, ObservableUser observable, ObservableUser target)
+        {
+            observable.ObservableUsers = new List<ObservableUser>();
+            observable.ObservableUsers.Add(target);
+
+            Task likesAnalizingTask = Task.Run(
+            () => StartLikesAnalizing(observer, observable, _cancellationTokenSource.Token));
+
+            Task commentsAnalizingTask = Task.Run(
+            () => StartCommentsAnalizing(observer, observable, _cancellationTokenSource.Token));
+
+            _tasks.Push(likesAnalizingTask);
+            _tasks.Push(commentsAnalizingTask);
+        }
     }
 }

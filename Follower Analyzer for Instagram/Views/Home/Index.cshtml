@@ -5,7 +5,7 @@
 
 
 <div class="row">
-    <div class="col-md-2 mx-auto">
+    <div class="col-md-2 ml-5 float-left">
         <p class="pt-5 font-weight-bold">Get most popular posts</p>
         @using (Ajax.BeginForm("GetMostPopularPosts", new AjaxOptions { UpdateTargetId = "results" }))
         {
@@ -23,6 +23,12 @@
         {
             <input type="text" name="nameForComments" class="custom-form-control" placeholder="username" required />
             <input type="submit" class="btn btn-info" id="getTopTenComments" value="Go" />
+        }
+        <p class="pt-5 font-weight-bold">Get observable user activities</p>
+        @using (Ajax.BeginForm("GetObservableUserActivities", new AjaxOptions { UpdateTargetId = "results" }))
+        {
+            <input type="text" name="userName" class="custom-form-control" placeholder="username" required />
+            <input type="submit" class="btn btn-info" id="getObservableUserActivities" value="Go" />
         }
         <p class="pt-5"></p>
         @using (Ajax.BeginForm("GetSubscriptionsStatisticsAsync", new AjaxOptions { UpdateTargetId = "statistic" }))

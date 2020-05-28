@@ -264,13 +264,13 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
         public async Task<ActionResult> GetObservableUserActivities(string userName)
         {
-            UserActivityViewModel activities = new UserActivityViewModel();
+            var activities = new UserActivityViewModel();
             activities.UserName = userName;
             string primaryKey = _instaApi.GetPrimaryKeyByUsername(userName);
             activities.ProfilePictureUrl = await _instaApi.GetUserProfilePictureUriByPrimaryKeyAsync(primaryKey);
             List<UserActivity> userActivities = (await _repository.GetListAsync<UserActivity>(x => x.InitiatorPrimaryKey == primaryKey)).ToList<UserActivity>();
             activities.Activities = userActivities;
-            return PartialView("_ObservableUserActivities", activities);
+            return PartialView(activities);
         }
 
         [HttpGet]
@@ -286,49 +286,30 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             user.Username = observableUser.UserName; 
             user.InstagramPK = _instaApi.GetPrimaryKeyByUsername(observableUser.UserName);
             if (await _repository.GetAsync<ObservableUser>(x=>x.InstagramPK == user.InstagramPK) != null)
-                return RedirectToAction("Index", new { status = "repeat" });
+                return RedirectToAction("Index", new { status = "repeat" }); // TODO: return text "user is already observable"
             if (!await _repository.CreateAsync<ObservableUser>(user))
                 return RedirectToAction("Index", new { status = "bad" });
-            string instaPK = _instaApi.GetCurrentUserPrimaryKey();
-            ApplicationUser currentUser = await _repository.GetAsync<ApplicationUser>(x => x.InstagramPK == instaPK);
-            currentUser.ObservableAccaunts.Add(user);
-            await _repository.UpdateAsync<ApplicationUser>(currentUser);
+
             string primaryKey = System.Web.HttpContext.Current.Session["PrimaryKey"].ToString();
             var observer = await _repository.GetAsync<ApplicationUser>(u => u.InstagramPK == primaryKey);
 
             Startup.ActivityAnalizer.AddUserForObservation(observer, user);
 
-            return RedirectToAction("Index", new { status = "success" });
+            return RedirectToAction("Index", new { status = "success" }); ;
         }
 
         [HttpGet]
         public async Task<ActionResult> AddObservablePageForObservableUser()
         {
-            string instaPK = _instaApi.GetCurrentUserPrimaryKey();
-            ApplicationUser currentUser = await _repository.GetAsync<ApplicationUser>(x => x.InstagramPK == instaPK);
-            ObservablePageForObservableUserVM observablePage = new ObservablePageForObservableUserVM();
 
-            foreach (var observableUser in currentUser.ObservableAccaunts)
-                observablePage.ObservableUsers.Add(new SelectListItem
-                {
-                    Text = observableUser.Username,
-                    Value = observableUser.Username
-                });
-            return PartialView("_AddObservablePageForObservableUser", observablePage);
+            return PartialView();
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddObservablePageForObservableUser(ObservablePageForObservableUserVM observablePage)
+        public async Task<ActionResult> AddObservablePageForObservableUser(string observablePageUserName, string observableUserUsername)
         {
-            ObservableUser observableUser = new ObservableUser();
-            observableUser = await _repository.GetAsync<ObservableUser>(x => x.Username == observablePage.observableUserName);
-            ObservableUser page = new ObservableUser();
-            page.InstagramPK = _instaApi.GetPrimaryKeyByUsername(observablePage.TargetContentName);
-            page.Username = observablePage.TargetContentName;
-            await _repository.CreateAsync<ObservableUser>(page);
-            observableUser.ObservableUsers.Add(page);
-            await _repository.UpdateAsync<ObservableUser>(observableUser);
-            return RedirectToAction("Index", new { status = "success" });
+
+            return PartialView();
         }
     }
 }
