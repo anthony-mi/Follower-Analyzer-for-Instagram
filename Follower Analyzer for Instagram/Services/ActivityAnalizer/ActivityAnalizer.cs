@@ -104,6 +104,8 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
                             }
                         }
 
+                        posts = newPostsState;
+
                         Sleep(SLEEP_TIMEOUT, cancellationToken);
                     } while (!cancellationToken.IsCancellationRequested);
                 });
@@ -156,7 +158,7 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
                 activity.EventDate = DateTime.Now;
                 activity.ActivityType = UserActivityType.Like;
 
-                _commentCreated?.Invoke(null, activity);
+                _postIsLiked?.Invoke(null, activity);
             }
         }
 
@@ -247,6 +249,8 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
                                 CheckForUserLike(observer, observable, oservableConnectedUser, distinctivePost.Key, distinctivePost.Value);
                             }
                         }
+
+                        posts = newPostsState;
 
                         Sleep(SLEEP_TIMEOUT, cancellationToken);
                     } while (!cancellationToken.IsCancellationRequested);
