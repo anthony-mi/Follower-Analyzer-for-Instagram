@@ -360,7 +360,7 @@
     <Content Include="Scripts\popper.js.map" />
     <Content Include="Scripts\popper-utils.min.js.map" />
     <Content Include="Scripts\popper-utils.js.map" />
-    <Content Include="Views\Home\_SubscriptionsStatistics.cshtml" />
+    <Content Include="Views\Home\GetSubscriptionsStatisticsAsync.cshtml" />
     <Content Include="Views\Home\ListPosts.cshtml" />
     <Content Include="Views\Home\_ObservableUserActivities.cshtml" />
     <Content Include="Views\Home\GetMostPopularPosts.cshtml" />

@@ -1,9 +1,8 @@
 ﻿@model Follower_Analyzer_for_Instagram.Models.ViewModels.SubscriptionsStatisticsViewModel
 
-<table cellpadding="0" cellspacing="0" border="0">
-    <tr>
-        <td valign="top"><b>New Subscriptions</b></td>
-        <td>
+    <div class="my-5">
+        <div class="alert alert-dismissible alert-danger mr-4">
+            <strong>Followings:</strong>
             @if (Model != null && Model.NewSubscriptions != null)
             {
                 <span>@Html.DisplayFor(model => model.NewSubscriptions.Count)</span>
@@ -12,10 +11,10 @@
             {
                 <span>-</span>
             }
-        </td>
-        <td valign="top"><b>Have Unfollowed Me</b></td>
-        <td>
-            @if (Model != null && Model.NewSubscriptions != null)
+        </div>
+        <div class="alert alert-dismissible alert-danger mr-4">
+            <strong>Followers:</strong>
+            @if (Model != null && Model.UnsubscribedSubscriptions != null)
             {
                 <span>@Html.DisplayFor(model => model.UnsubscribedSubscriptions.Count)</span>
             }
@@ -23,6 +22,5 @@
             {
                 <span>-</span>
             }
-        </td>
-    </tr>
-</table>
+        </div>
+    </div>
