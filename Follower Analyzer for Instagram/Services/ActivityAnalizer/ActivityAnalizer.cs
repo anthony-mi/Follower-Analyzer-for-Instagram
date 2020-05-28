@@ -177,7 +177,7 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
                 {
                     if (posts[i].CountOfLikes != newPostsState[i].CountOfLikes)
                     {
-                        distinctivePosts.Add(posts[i], newPostsState[i]);
+                        distinctivePosts.Add(posts[i], newPostsState[i]);                        
                     }
 
                     if (posts[i].CountOfComments != newPostsState[i].CountOfComments)

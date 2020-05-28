@@ -192,9 +192,13 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\AutofacConfig.cs" />
-    <Compile Include="Migrations\202005280608456_NewDb.cs" />
-    <Compile Include="Migrations\202005280608456_NewDb.Designer.cs">
-      <DependentUpon>202005280608456_NewDb.cs</DependentUpon>
+    <Compile Include="Migrations\202005281233547_NewDB.cs" />
+    <Compile Include="Migrations\202005281233547_NewDB.Designer.cs">
+      <DependentUpon>202005281233547_NewDB.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202005281358030_NewFields.cs" />
+    <Compile Include="Migrations\202005281358030_NewFields.Designer.cs">
+      <DependentUpon>202005281358030_NewFields.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -392,8 +396,11 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202005280608456_NewDb.resx">
-      <DependentUpon>202005280608456_NewDb.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202005281233547_NewDB.resx">
+      <DependentUpon>202005281233547_NewDB.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005281358030_NewFields.resx">
+      <DependentUpon>202005281358030_NewFields.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -70,8 +70,8 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         {
             return View();
         }
-   
-        public async Task< JsonResult> AddUserToObservation(string userName)//+
+
+        public async Task<JsonResult> AddUserToObservation(string userName)//+
         {
             List<string> errors = new List<string>();
             ObservableUser observableUser = new ObservableUser();
@@ -84,8 +84,8 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
                 if (!added)
                 {
-                    errors.Add( "Не удалось добавить пользователя!");
-                 
+                    errors.Add("Не удалось добавить пользователя!");
+
                     Response.StatusCode = 404;//not found
                 }
                 else
@@ -102,7 +102,8 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
             }
 
-            return Json(new {
+            return Json(new
+            {
                 observableUser = observableUser,
                 Errors = errors
             });
@@ -110,12 +111,12 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
         public JsonResult GetSubscribersCurrentUser()//+
         {
-           List<ApplicationUser> subscribers = _instaApi.GetUserFollowersByUsername(Session["UserName"].ToString());
-          
+            List<ApplicationUser> subscribers = _instaApi.GetUserFollowersByUsername(Session["UserName"].ToString());
+
             return Json(subscribers);
         }
 
-         /// <summary>
+        /// <summary>
         /// завершить наблюдения за пользователем
         /// </summary>
         /// <param name="id"></param>
@@ -127,7 +128,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
             bool deleted = await _repository.DeleteAsync<ObservableUser>(observableUser);
 
-            if(!deleted)
+            if (!deleted)
             {
                 Response.StatusCode = 500;//Internal Server Error
             }
@@ -234,7 +235,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
         public async Task<ActionResult> GetSubscriptionsStatisticsAsync(string userPrimaryKey = null)
         {
-            if(String.IsNullOrEmpty(userPrimaryKey))
+            if (String.IsNullOrEmpty(userPrimaryKey))
                 userPrimaryKey = System.Web.HttpContext.Current.Session["PrimaryKey"].ToString();
             var user = new ApplicationUser();
             user = await _repository.GetAsync<ApplicationUser>(x => x.InstagramPK == userPrimaryKey);
@@ -242,7 +243,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             // Get current followers list
             List<ApplicationUser> currentSubscriptionsList = await _instaApi.GetUserSubscriptionsByUsernameAsync(user.Username);
             // Get unsubscribed followers
-            foreach(var subscription in user.Subscriptions)
+            foreach (var subscription in user.Subscriptions)
             {
                 if (!currentSubscriptionsList.Contains(subscription))
                     subscriptionsStatistics.UnsubscribedSubscriptions.Add(subscription);
@@ -255,7 +256,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             }
             //If there are changes, then save them in the database
             if (subscriptionsStatistics.NewSubscriptions.Count > 0 || subscriptionsStatistics.UnsubscribedSubscriptions.Count > 0)
-            { 
+            {
                 user.Subscriptions = currentSubscriptionsList;
                 await _repository.UpdateAsync<ApplicationUser>(user);
             }
@@ -282,20 +283,51 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         [HttpPost]
         public async Task<ActionResult> AddObservableUser(ObservableUserViewModel observableUser)
         {
-            ObservableUser user = new ObservableUser();
-            user.Username = observableUser.UserName; 
-            user.InstagramPK = _instaApi.GetPrimaryKeyByUsername(observableUser.UserName);
-            if (await _repository.GetAsync<ObservableUser>(x=>x.InstagramPK == user.InstagramPK) != null)
-                return RedirectToAction("Index", new { status = "repeat" }); // TODO: return text "user is already observable"
-            if (!await _repository.CreateAsync<ObservableUser>(user))
-                return RedirectToAction("Index", new { status = "bad" });
-
+            // The current registered user who uses our application
             string primaryKey = System.Web.HttpContext.Current.Session["PrimaryKey"].ToString();
             var observer = await _repository.GetAsync<ApplicationUser>(u => u.InstagramPK == primaryKey);
 
+            // The user we are going to add to the database
+            ObservableUser user = new ObservableUser();
+            user.Username = observableUser.UserName;
+            user.InstagramPK = _instaApi.GetPrimaryKeyByUsername(observableUser.UserName);
+            user.Observers.Add(observer);
+            
+            // Checking the presence of the user we want to add to the database in the database
+            ObservableUser observable = await _repository.GetAsync<ObservableUser>(x => x.InstagramPK == user.InstagramPK);
+            if (observable != null)
+            {
+                // If such a user exists, check the existence of the current user in the list of its observers
+                if (observable.Observers.Contains(observer))
+                {
+                    // If such a observer exists, return a message about it.
+                    return RedirectToAction("Index", new { status = "repeat" });
+                }                    
+                else
+                {
+                    /* If such a observer does not exist, add it to the collection of observers, 
+                     update the data in the database and return a message about the successful operation.*/
+                    observable.Observers.Add(observer);
+                    await _repository.UpdateAsync<ObservableUser>(observable);
+                    observer.ObservableAccaunts.Add(observable);
+                    await _repository.UpdateAsync<ApplicationUser>(observer);
+                    return RedirectToAction("Index", new { status = "success" });
+                }
+            }
+
+            // Trying to add a new observable user to the database
+            if (!await _repository.CreateAsync<ObservableUser>(user))
+                return RedirectToAction("Index", new { status = "bad" });
+
+            // Update the data in the database
+            observer.ObservableAccaunts.Add(user);
+            await _repository.UpdateAsync<ApplicationUser>(observer);
+
+            // Start of activity analysis of a new observable user
             Startup.ActivityAnalizer.AddUserForObservation(observer, user);
 
-            return RedirectToAction("Index", new { status = "success" }); ;
+            // Return a message about the successful operation
+            return RedirectToAction("Index", new { status = "success" });
         }
 
         [HttpGet]
@@ -317,14 +349,46 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         [HttpPost]
         public async Task<ActionResult> AddObservablePageForObservableUser(ObservablePageForObservableUserVM observablePage)
         {
+            // Receive the observable user
             ObservableUser observableUser = new ObservableUser();
             observableUser = await _repository.GetAsync<ObservableUser>(x => x.Username == observablePage.observableUserName);
-            ObservableUser page = new ObservableUser();
+
+            // Checking the presence of the target content we want to add to the database in the database
+            ObservableUser page = await _repository.GetAsync<ObservableUser>(x => x.Username == observablePage.TargetContentName);
+            if(page != null)
+            {
+                // If such content exists, check the existence of the observable user in the list of its ActivityInitiators
+                if (observableUser != null && page.ActivityInitiators.Contains(observableUser))
+                {
+                    return RedirectToAction("Index", new { status = "repeat" });
+                }
+                else
+                {
+                    /* If such observable user does not exist, add it to the collection of ActivityInitiators, 
+                     update the data in the database and return a message about the successful operation.*/
+                    page.ActivityInitiators.Add(observableUser);
+                    await _repository.UpdateAsync<ObservableUser>(page);
+                    observableUser.ObservableUsers.Add(page);
+                    await _repository.UpdateAsync<ObservableUser>(observableUser);
+                    return RedirectToAction("Index", new { status = "success" });
+                }
+            }
+
+            // If such content is not in the database, then we initialize the new content
+            page = new ObservableUser();
             page.InstagramPK = _instaApi.GetPrimaryKeyByUsername(observablePage.TargetContentName);
             page.Username = observablePage.TargetContentName;
-            await _repository.CreateAsync<ObservableUser>(page);
+            page.ActivityInitiators.Add(observableUser);
+
+            // Trying to add a new content to the database
+            if (!await _repository.CreateAsync<ObservableUser>(page))
+                return RedirectToAction("Index", new { status = "bad" });
+
+            // Update the data in the database
             observableUser.ObservableUsers.Add(page);
             await _repository.UpdateAsync<ObservableUser>(observableUser);
+
+            // Return a message about the successful operation
             return RedirectToAction("Index", new { status = "success" });
         }
     }
