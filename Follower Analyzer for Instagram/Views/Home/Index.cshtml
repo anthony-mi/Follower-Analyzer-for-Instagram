@@ -49,22 +49,21 @@
 
 <div id="response" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
-        @{ if (ViewBag.RequestState == "bad")
-            {
-                Html.RenderPartial("_BadFormatPartial");
-            }
-            else if (ViewBag.RequestState == "success")
-            {
-                Html.RenderPartial("_SuccessPartial");
-            }
-            else if (ViewBag.RequestState == "repeat")
-            {
-                Html.RenderPartial("_RepeatItemPartial");
-            }
-            else if (ViewBag.RequestState == "required")
-            {
-                Html.RenderPartial("_RequiredPartial");
-            }
+        @if (ViewBag.RequestState == "bad")
+        {
+            Html.RenderPartial("_BadFormatPartial");
+        }
+        else if (ViewBag.RequestState == "success")
+        {
+            Html.RenderPartial("_SuccessPartial");
+        }
+        else if (ViewBag.RequestState == "repeat")
+        {
+            Html.RenderPartial("_RepeatItemPartial");
+        }
+        else if (ViewBag.RequestState == "required")
+        {
+            Html.RenderPartial("_RequiredPartial");
         }
     </div>
 </div>
