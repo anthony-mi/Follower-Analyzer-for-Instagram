@@ -9,11 +9,9 @@ namespace Follower_Analyzer_for_Instagram.Models
     {
         public int Id { get; set; }
         public virtual List<ObservableUser> ObservableUsers { get; set; }
-        public virtual List<ApplicationUser> Observers { get; set; }
         public ObservableUser()
         {
             ObservableUsers = new List<ObservableUser>();
-            Observers = new List<ApplicationUser>();
         }
     }
 }
