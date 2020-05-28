@@ -140,10 +140,10 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         }
 
 
-        public ActionResult TopTenLikes(string userName)
+        public ActionResult TopTenLikes(string nameForLikes)
         {
-            var posts = _instaApi.GetUserPostsByUsername(userName);
-            var sortPosts = from post in posts orderby post.CountOfLikes select post;
+            var posts = _instaApi.GetUserPostsByUsername(nameForLikes);
+            var sortPosts = from post in posts orderby post.CountOfLikes descending select post;
             var topTenPosts = new List<InstagramPost>();
             int counter = 0;
 
@@ -154,19 +154,19 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                     topTenPosts.Add(post);
                 }
 
-                if (counter == 10)
+                if (counter == 9)
                 {
                     break;
                 }
                 counter++;
             }
-            return View("ListPosts", topTenPosts);
+            return PartialView(topTenPosts);
         }
 
-        public ActionResult TopTenByComments(string userName)
+        public ActionResult TopTenByComments(string nameForComments)
         {
-            var posts = _instaApi.GetUserPostsByUsername(userName);
-            var sortPosts = from post in posts orderby post.CountOfComments select post;
+            var posts = _instaApi.GetUserPostsByUsername(nameForComments);
+            var sortPosts = from post in posts orderby post.CountOfComments descending select post;
             var topTenPosts = new List<InstagramPost>();
             int counter = 0;
 
@@ -177,13 +177,13 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                     topTenPosts.Add(post);
                 }
 
-                if (counter == 10)
+                if (counter == 9)
                 {
                     break;
                 }
                 counter++;
             }
-            return View("ListPosts", topTenPosts);
+            return PartialView(topTenPosts);
         }
 
         public ActionResult SortingPostsDescOrder()
@@ -259,7 +259,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 user.Subscriptions = currentSubscriptionsList;
                 await _repository.UpdateAsync<ApplicationUser>(user);
             }
-            return PartialView("_SubscriptionsStatistics", subscriptionsStatistics);
+            return PartialView(subscriptionsStatistics);
         }
 
         public async Task<ActionResult> GetObservableUserActivities(string userName)

@@ -196,14 +196,6 @@
     <Compile Include="Migrations\202005272354175_BagFixing.Designer.cs">
       <DependentUpon>202005272354175_BagFixing.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202005280129226_ChangeEntyties.cs" />
-    <Compile Include="Migrations\202005280129226_ChangeEntyties.Designer.cs">
-      <DependentUpon>202005280129226_ChangeEntyties.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202005280247218_ChangeEntyties2.cs" />
-    <Compile Include="Migrations\202005280247218_ChangeEntyties2.Designer.cs">
-      <DependentUpon>202005280247218_ChangeEntyties2.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationUser.cs" />
@@ -215,7 +207,6 @@
     <Compile Include="Models\ViewModels\InstagramPost.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\ViewModels\IndexViewModel.cs" />
-    <Compile Include="Models\ViewModels\ObservableUserViewModel.cs" />
     <Compile Include="Models\ViewModels\SubscriptionsStatisticsViewModel.cs" />
     <Compile Include="Models\ViewModels\UserActivityViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -369,13 +360,13 @@
     <Content Include="Scripts\popper.js.map" />
     <Content Include="Scripts\popper-utils.min.js.map" />
     <Content Include="Scripts\popper-utils.js.map" />
-    <Content Include="Views\Home\_SubscriptionsStatistics.cshtml" />
+    <Content Include="Views\Home\GetSubscriptionsStatisticsAsync.cshtml" />
     <Content Include="Views\Home\ListPosts.cshtml" />
     <Content Include="Views\Home\_ObservableUserActivities.cshtml" />
-    <Content Include="Views\Home\_AddObservableUser.cshtml" />
-    <Content Include="Views\Home\_BadResponse.cshtml" />
-    <Content Include="Views\Home\_RepeatItemPartial.cshtml" />
-    <Content Include="Views\Home\_SuccessPartial.cshtml" />
+    <Content Include="Views\Home\GetMostPopularPosts.cshtml" />
+    <Content Include="Views\Home\TestListUsersObserv.cshtml" />
+    <Content Include="Views\Home\TopTenLikes.cshtml" />
+    <Content Include="Views\Home\TopTenByComments.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AppData\" />
@@ -394,12 +385,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202005272354175_BagFixing.resx">
       <DependentUpon>202005272354175_BagFixing.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202005280129226_ChangeEntyties.resx">
-      <DependentUpon>202005280129226_ChangeEntyties.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202005280247218_ChangeEntyties2.resx">
-      <DependentUpon>202005280247218_ChangeEntyties2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
