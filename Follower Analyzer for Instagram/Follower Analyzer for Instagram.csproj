@@ -192,13 +192,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\AutofacConfig.cs" />
-    <Compile Include="Migrations\202005272354175_BagFixing.cs" />
-    <Compile Include="Migrations\202005272354175_BagFixing.Designer.cs">
-      <DependentUpon>202005272354175_BagFixing.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202005280436272_ActivityAnalizing.cs" />
-    <Compile Include="Migrations\202005280436272_ActivityAnalizing.Designer.cs">
-      <DependentUpon>202005280436272_ActivityAnalizing.cs</DependentUpon>
+    <Compile Include="Migrations\202005280608456_NewDb.cs" />
+    <Compile Include="Migrations\202005280608456_NewDb.Designer.cs">
+      <DependentUpon>202005280608456_NewDb.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -211,6 +207,7 @@
     <Compile Include="Models\ViewModels\InstagramPost.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\ViewModels\IndexViewModel.cs" />
+    <Compile Include="Models\ViewModels\ObservablePageForObservableUserVM.cs" />
     <Compile Include="Models\ViewModels\ObservableUserViewModel.cs" />
     <Compile Include="Models\ViewModels\SubscriptionsStatisticsViewModel.cs" />
     <Compile Include="Models\ViewModels\UserActivityViewModel.cs" />
@@ -378,6 +375,7 @@
     <Content Include="Views\Home\_BadResponse.cshtml" />
     <Content Include="Views\Home\_RepeatItemPartial.cshtml" />
     <Content Include="Views\Home\_SuccessPartial.cshtml" />
+    <Content Include="Views\Home\_AddObservablePageForObservableUser.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AppData\" />
@@ -394,11 +392,8 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202005272354175_BagFixing.resx">
-      <DependentUpon>202005272354175_BagFixing.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202005280436272_ActivityAnalizing.resx">
-      <DependentUpon>202005280436272_ActivityAnalizing.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202005280608456_NewDb.resx">
+      <DependentUpon>202005280608456_NewDb.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

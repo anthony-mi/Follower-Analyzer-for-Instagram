@@ -289,27 +289,46 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 return RedirectToAction("Index", new { status = "repeat" });
             if (!await _repository.CreateAsync<ObservableUser>(user))
                 return RedirectToAction("Index", new { status = "bad" });
-
-            ApplicationUser observer = new ApplicationUser();
-            observer.InstagramPK = System.Web.HttpContext.Current.Session["PrimaryKey"].ToString();
+            string instaPK = _instaApi.GetCurrentUserPrimaryKey();
+            ApplicationUser currentUser = await _repository.GetAsync<ApplicationUser>(x => x.InstagramPK == instaPK);
+            currentUser.ObservableAccaunts.Add(user);
+            await _repository.UpdateAsync<ApplicationUser>(currentUser);
+            string primaryKey = System.Web.HttpContext.Current.Session["PrimaryKey"].ToString();
+            var observer = await _repository.GetAsync<ApplicationUser>(u => u.InstagramPK == primaryKey);
 
             Startup.ActivityAnalizer.AddUserForObservation(observer, user);
 
-            return RedirectToAction("Index", new { status = "success" }); ;
+            return RedirectToAction("Index", new { status = "success" });
         }
 
         [HttpGet]
         public async Task<ActionResult> AddObservablePageForObservableUser()
         {
+            string instaPK = _instaApi.GetCurrentUserPrimaryKey();
+            ApplicationUser currentUser = await _repository.GetAsync<ApplicationUser>(x => x.InstagramPK == instaPK);
+            ObservablePageForObservableUserVM observablePage = new ObservablePageForObservableUserVM();
 
-            return PartialView();
+            foreach (var observableUser in currentUser.ObservableAccaunts)
+                observablePage.ObservableUsers.Add(new SelectListItem
+                {
+                    Text = observableUser.Username,
+                    Value = observableUser.Username
+                });
+            return PartialView("_AddObservablePageForObservableUser", observablePage);
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddObservablePageForObservableUser(string observablePageUserName, string observableUserUsername)
+        public async Task<ActionResult> AddObservablePageForObservableUser(ObservablePageForObservableUserVM observablePage)
         {
-
-            return PartialView();
+            ObservableUser observableUser = new ObservableUser();
+            observableUser = await _repository.GetAsync<ObservableUser>(x => x.Username == observablePage.observableUserName);
+            ObservableUser page = new ObservableUser();
+            page.InstagramPK = _instaApi.GetPrimaryKeyByUsername(observablePage.TargetContentName);
+            page.Username = observablePage.TargetContentName;
+            await _repository.CreateAsync<ObservableUser>(page);
+            observableUser.ObservableUsers.Add(page);
+            await _repository.UpdateAsync<ObservableUser>(observableUser);
+            return RedirectToAction("Index", new { status = "success" });
         }
     }
 }

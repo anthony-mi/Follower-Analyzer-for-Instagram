@@ -1,0 +1,43 @@
+﻿@model Follower_Analyzer_for_Instagram.Models.ViewModels.ObservablePageForObservableUserVM
+
+@using System.Web.Optimization
+@Scripts.Render("~/bundles/jqueryval")
+<div class="modal-content">
+    <div class="modal-header bg-dark">
+        <h5 class="modal-title text-white-50" id="dialogModalLabel">Add content to observation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            <h4>Observable page for observable user</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(model => model.TargetContentName, "Target content name", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.TargetContentName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.TargetContentName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.observableUserName, htmlAttributes: new { @class = "control-label col-md-2 font-weight-bolder" })
+                <div class="col-md-10">
+                    @Html.DropDownListFor(model => model.observableUserName, Model.ObservableUsers, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.observableUserName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <input type="submit" value="Add content" class="btn btn-info" />
+            </div>
+        </div>
+        }
+    </div>
+</div>
+
