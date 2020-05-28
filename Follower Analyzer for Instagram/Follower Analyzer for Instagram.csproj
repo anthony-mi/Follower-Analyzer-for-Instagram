@@ -363,6 +363,10 @@
     <Content Include="Views\Home\_SubscriptionsStatistics.cshtml" />
     <Content Include="Views\Home\ListPosts.cshtml" />
     <Content Include="Views\Home\_ObservableUserActivities.cshtml" />
+    <Content Include="Views\Home\GetMostPopularPosts.cshtml" />
+    <Content Include="Views\Home\TestListUsersObserv.cshtml" />
+    <Content Include="Views\Home\TopTenLikes.cshtml" />
+    <Content Include="Views\Home\TopTenByComments.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AppData\" />
