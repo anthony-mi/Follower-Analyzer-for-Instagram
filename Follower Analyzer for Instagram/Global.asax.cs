@@ -22,7 +22,14 @@ namespace Follower_Analyzer_for_Instagram
 
         void Application_End(object sender, EventArgs e)
         {
-            Startup.ActivityAnalizingCancellationTokenSource.Cancel();
+            try
+            {
+                Startup.ActivityAnalizingCancellationTokenSource.Cancel();
+            }
+            catch
+            {
+
+            }
         }
     }
 }
