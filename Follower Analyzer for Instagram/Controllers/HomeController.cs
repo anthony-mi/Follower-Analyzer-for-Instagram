@@ -210,35 +210,26 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             return View("ViewName", topTenPosts);
         }
 
-        [HttpGet]
-        public ActionResult GetMostPopularPosts(IndexViewModel viewModel)
+        public ActionResult GetMostPopularPosts(string name)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(viewModel);
-            }
+            var viewModel = new IndexViewModel();
+            List<InstagramPost> posts = _instaApi.GetUserPostsByUsername(name);
+            viewModel.Username = name;
 
-            List<InstagramPost> posts = _instaApi.GetUserPostsByUsername(viewModel.Username);
             viewModel.Posts = new List<InstagramPost>();
 
             if (posts.Count == 0)
             {
-                return View("Index", viewModel);
+                return PartialView(viewModel);
             }
 
-            //var sortedByLikesPosts = from post in posts orderby post.CountOfLikes select post;
-            posts.Sort(
-                (post1, post2) => post1.CountOfLikes.CompareTo(post2.CountOfLikes)
-                );
+            posts.Sort((post1, post2) => post1.CountOfLikes.CompareTo(post2.CountOfLikes));
             viewModel.Posts.Add(posts.Last());
 
-            posts.Sort(
-                (post1, post2) => post1.CountOfComments.CompareTo(post2.CountOfComments)
-                );
-            //var sortedByCommentsPosts = from post in posts orderby post.CountOfComments select post;
+            posts.Sort((post1, post2) => post1.CountOfComments.CompareTo(post2.CountOfComments));
             viewModel.Posts.Add(posts.Last());
 
-            return View("Index", viewModel);
+            return PartialView(viewModel);
         }
 
         public async Task<ActionResult> GetSubscriptionsStatisticsAsync(string userPrimaryKey = null)
