@@ -57,12 +57,12 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             return user == null ? new byte[] { } : user.StateData;
         }
 
-        public ActionResult Index()
+        public ActionResult Index(string status = "")
         {
             var viewModel = new IndexViewModel();
             viewModel.Username = string.Empty;
             viewModel.Posts = new List<InstagramPost>();
-
+            ViewBag.RequestState = status;
             return View(viewModel);
         }
 
@@ -271,6 +271,39 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             List<UserActivity> userActivities = (await _repository.GetListAsync<UserActivity>(x => x.InitiatorPrimaryKey == primaryKey)).ToList<UserActivity>();
             activities.Activities = userActivities;
             return PartialView("_ObservableUserActivities", activities);
+        }
+
+        [HttpGet]
+        public ActionResult AddObservableUser()
+        {
+            return PartialView("_AddObservableUser");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AddObservableUser(ObservableUserViewModel observableUser)
+        {
+            ObservableUser user = new ObservableUser();
+            user.Username = observableUser.UserName; 
+            user.InstagramPK = _instaApi.GetPrimaryKeyByUsername(observableUser.UserName);
+            if (await _repository.GetAsync<ObservableUser>(x=>x.InstagramPK == user.InstagramPK) != null)
+                return RedirectToAction("Index", new { status = "repeat" });
+            if (!await _repository.CreateAsync<ObservableUser>(user))
+                return RedirectToAction("Index", new { status = "bad" });
+            return RedirectToAction("Index", new { status = "success" }); ;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> AddObservablePageForObservableUser()
+        {
+
+            return PartialView();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AddObservablePageForObservableUser(string observablePageUserName, string observableUserUsername)
+        {
+
+            return PartialView();
         }
     }
 }
