@@ -1,5 +1,4 @@
-﻿@using Follower_Analyzer_for_Instagram.Models
-@model LoginViewModel
+﻿@model Follower_Analyzer_for_Instagram.Models.LoginViewModel
 @{
     ViewBag.Title = "Login";
 }
@@ -29,12 +28,6 @@
                 @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
                 @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
             </div>
-            @*<div class="form-group">
-                <div class="form-check text-center">
-                    <input type="checkbox" class="form-check-input" id="customCheck1">
-                    <label class="form-check-label" for="customCheck1">Remember me</label>
-                </div>
-            </div>*@
             <div class="form-group">
                 <input type="submit" value="Login" class="btn btn-dark btn-block btn-lg px-sm-2 my-4" onclick="ShowSpinner();" />
             </div>

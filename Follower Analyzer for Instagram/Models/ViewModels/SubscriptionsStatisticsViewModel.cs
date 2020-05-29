@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 
-namespace Follower_Analyzer_for_Instagram.Models.ViewModels
+namespace Follower_Analyzer_for_Instagram.Models
 {
     public class SubscriptionsStatisticsViewModel
     {

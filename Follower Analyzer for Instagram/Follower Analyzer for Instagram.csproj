@@ -379,7 +379,7 @@
     <Content Include="Views\Home\_BadResponse.cshtml" />
     <Content Include="Views\Home\_RepeatItemPartial.cshtml" />
     <Content Include="Views\Home\_SuccessPartial.cshtml" />
-    <Content Include="Views\Home\_AddObservablePageForObservableUser.cshtml" />
+    <Content Include="Views\Home\_AddObservableAccountForObservableUser.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AppData\" />
