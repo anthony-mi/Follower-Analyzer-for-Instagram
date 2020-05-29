@@ -10,12 +10,12 @@ namespace Follower_Analyzer_for_Instagram.Models
         public byte[] StateData { get; set; }
         // Список подписчиков пользователя
         public List<ApplicationUser> Subscriptions { get; set; }
-        public virtual List<ObservableUser> ObservableAccaunts { get; set; }
+        public virtual List<ObservableUser> ObservableAccounts { get; set; }
         public DateTime LastUpdateDate { get; set; }
 
         public ApplicationUser()
         {
-            ObservableAccaunts = new List<ObservableUser>();
+            ObservableAccounts = new List<ObservableUser>();
             Subscriptions = new List<ApplicationUser>();
         }
     }

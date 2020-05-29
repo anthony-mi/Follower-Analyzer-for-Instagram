@@ -58,7 +58,7 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
 
             foreach (var observer in observers)
             {
-                foreach(var observable in observer.ObservableAccaunts)
+                foreach(var observable in observer.ObservableAccounts)
                 {
                     Task likesAnalizingTask = Task.Run(
                 () => StartLikesAnalizing(observer, observable, cancellationToken));
