@@ -60,10 +60,12 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
         public ActionResult About()
         {
+           // throw new HttpException("Пользователь не найден!");
+          
             return View();
         }
-
-        public async Task<JsonResult> AddUserToObservation(string userName)//+
+   
+        public async Task< JsonResult> AddUserToObservation(string userName)
         {
             var errors = new List<string>();
             var observableUser = new ObservableUser();
@@ -76,8 +78,8 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
                 if (!added)
                 {
-                    errors.Add("Не удалось добавить пользователя!");
-
+                    errors.Add( "Не удалось добавить пользователя!");
+                  //  throw new HttpException("Не удалось добавить пользователя!");
                     Response.StatusCode = 404;//not found
                 }
                 else
@@ -101,7 +103,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             });
         }
 
-        public JsonResult GetSubscribersCurrentUser()//+
+        public JsonResult GetSubscribersCurrentUser()
         {
             List<ApplicationUser> subscribers = _instaApi.GetUserFollowersByUsername(Session["UserName"].ToString());
 
@@ -113,7 +115,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<JsonResult> FinishUserMonitoring(int? id)//+
+        public async Task<JsonResult> FinishUserMonitoring(int? id)
         {
             var observableUsers = (await _repository.GetListAsync<ObservableUser>()).ToList();
             var observableUser = observableUsers.Where(user => user.Id == id).FirstOrDefault();
@@ -131,6 +133,8 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
             return Json(string.Empty);
         }
+
+       
 
 
         public ActionResult TopTenLikes(string nameForLikes)
