@@ -380,6 +380,8 @@
     <Content Include="Views\Home\_RepeatItemPartial.cshtml" />
     <Content Include="Views\Home\_SuccessPartial.cshtml" />
     <Content Include="Views\Home\_AddObservableAccountForObservableUser.cshtml" />
+    <Content Include="Views\Home\_GetStatisticsByLikers.cshtml" />
+    <Content Include="Views\Home\_GetStatisticsByCommenters.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AppData\" />

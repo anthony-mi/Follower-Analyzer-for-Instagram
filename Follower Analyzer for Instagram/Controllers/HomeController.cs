@@ -294,7 +294,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 {
                     // If such a observer exists, return a message about it.
                     return RedirectToAction("Index", new { status = "repeat" });
-                }                    
+                }
                 else
                 {
                     /* If such a observer does not exist, add it to the collection of observers, 
@@ -347,7 +347,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
             // Checking the presence of the target content we want to add to the database in the database
             var page = await _repository.GetAsync<ObservableUser>(x => x.Username == observablePage.TargetContentName);
-            if(page != null)
+            if (page != null)
             {
                 // If such content exists, check the existence of the observable user in the list of its ActivityInitiators
                 if (observableUser != null && page.ActivityInitiators.Contains(observableUser))
@@ -382,6 +382,66 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
             // Return a message about the successful operation
             return RedirectToAction("Index", new { status = "success" });
+        }
+
+        public async Task<ActionResult> GetStatisticsByLikers(string userName, string sortType = "descending")
+        {
+            // Check the userName parameter. If it is empty, then set the name of the current user.
+            if (String.IsNullOrEmpty(userName))
+                userName = System.Web.HttpContext.Current.Session["UserName"].ToString();
+            string userPK = _instaApi.GetPrimaryKeyByUsername(userName);
+            // Get user's posts
+            List<InstagramPost> userPosts = await _instaApi.GetUserPostsByPrimaryKeyAsync(userPK);
+            // Create a dictionary for storing likers (key - user, value - number of likes)
+            Dictionary<User, int> Likers = new Dictionary<User, int>();
+            // Check the likers of each post and fill out our dictionary
+            foreach (var post in userPosts)
+            {
+                if (Likers.Count == 0)
+                    foreach (var liker in post.Likers)
+                        Likers.Add(liker, 1);
+
+                foreach (var liker in post.Likers)
+                    if (Likers.ContainsKey(liker))
+                        Likers[liker]++;
+                    else
+                        Likers.Add(liker, 1);
+            }
+            // return a partial view with a sorted dictionary, depending on the parameter sortType
+            if (sortType == "descending")
+                return PartialView("_GetStatisticsByLikers", Likers.OrderBy(x => x.Value));
+            else
+                return PartialView("_GetStatisticsByCommenters", Likers.OrderByDescending(x => x.Value));
+        }
+
+        public async Task<ActionResult> GetStatisticsByCommenters(string userName, string sortType = "descending")
+        {
+            // Check the userName parameter. If it is empty, then set the name of the current user.
+            if (String.IsNullOrEmpty(userName))
+                userName = System.Web.HttpContext.Current.Session["UserName"].ToString();
+            string userPK = _instaApi.GetPrimaryKeyByUsername(userName);
+            // Get user's posts
+            List<InstagramPost> userPosts = await _instaApi.GetUserPostsByPrimaryKeyAsync(userPK);
+            // Create a dictionary for storing commenters (key - user, value - number of comments)
+            Dictionary<User, int> Commenters = new Dictionary<User, int>();
+            // Check the commenters of each post and fill out our dictionary
+            foreach (var post in userPosts)
+            {
+                if (Commenters.Count == 0)
+                    foreach (var commenter in post.Commenters)
+                        Commenters.Add(commenter, 1);
+
+                foreach (var commenter in post.Commenters)
+                    if (Commenters.ContainsKey(commenter))
+                        Commenters[commenter]++;
+                    else
+                        Commenters.Add(commenter, 1);
+            }
+            // return a partial view with a sorted dictionary, depending on the parameter sortType
+            if (sortType == "descending")
+                return PartialView("_GetStatisticsByLikers", Commenters.OrderBy(x => x.Value));
+            else
+                return PartialView("_GetStatisticsByCommenters", Commenters.OrderByDescending(x => x.Value));
         }
     }
 }
