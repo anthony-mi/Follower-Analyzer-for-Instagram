@@ -1,9 +1,7 @@
 ﻿using Follower_Analyzer_for_Instagram.Models;
-using Follower_Analyzer_for_Instagram.Models.DBInfrastructure;
 using InstagramApiSharp;
 using InstagramApiSharp.API;
 using InstagramApiSharp.API.Builder;
-using InstagramApiSharp.API.Processors;
 using InstagramApiSharp.Classes;
 using InstagramApiSharp.Classes.Models;
 using System;
@@ -11,9 +9,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.UI.WebControls;
-using System.Xml.XPath;
 
 namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
 {

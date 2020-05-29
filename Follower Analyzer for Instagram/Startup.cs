@@ -1,7 +1,5 @@
 ﻿using Follower_Analyzer_for_Instagram.Models;
-using Follower_Analyzer_for_Instagram.Models.DBInfrastructure;
 using Follower_Analyzer_for_Instagram.Services.ActivityAnalizer;
-using Microsoft.Ajax.Utilities;
 using Microsoft.Owin;
 using Owin;
 using System.Threading;

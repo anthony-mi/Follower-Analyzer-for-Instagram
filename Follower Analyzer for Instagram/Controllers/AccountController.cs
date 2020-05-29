@@ -1,17 +1,10 @@
 ﻿using System;
-using System.Globalization;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
 using Follower_Analyzer_for_Instagram.Models;
-using Follower_Analyzer_for_Instagram.Models.DBInfrastructure;
 using Follower_Analyzer_for_Instagram.Services.InstagramAPI;
-using System.Web.Security;
 
 namespace Follower_Analyzer_for_Instagram.Controllers
 {

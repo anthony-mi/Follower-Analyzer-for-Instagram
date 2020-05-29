@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration.Configuration;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 
 namespace Follower_Analyzer_for_Instagram.Models
 {

@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using System.Web;
 
-namespace Follower_Analyzer_for_Instagram.Models.DBInfrastructure
+namespace Follower_Analyzer_for_Instagram.Models
 {
     public class FollowerAnalyzerRepository : IRepository, IDisposable
     {

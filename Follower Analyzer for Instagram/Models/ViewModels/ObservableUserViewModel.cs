@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Follower_Analyzer_for_Instagram.Models.ViewModels
+namespace Follower_Analyzer_for_Instagram.Models
 {
     public class ObservableUserViewModel
     {

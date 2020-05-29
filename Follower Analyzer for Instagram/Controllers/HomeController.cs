@@ -1,17 +1,9 @@
 ﻿using Follower_Analyzer_for_Instagram.Models;
-using Follower_Analyzer_for_Instagram.Models.DBInfrastructure;
-using Follower_Analyzer_for_Instagram.Models.ViewModels;
 using Follower_Analyzer_for_Instagram.Services.InstagramAPI;
-using InstagramApiSharp.Classes;
-using Microsoft.Ajax.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Drawing.Drawing2D;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Helpers;
 using System.Web.Mvc;
 
 namespace Follower_Analyzer_for_Instagram.Controllers
@@ -73,8 +65,8 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
         public async Task<JsonResult> AddUserToObservation(string userName)//+
         {
-            List<string> errors = new List<string>();
-            ObservableUser observableUser = new ObservableUser();
+            var errors = new List<string>();
+            var observableUser = new ObservableUser();
 
             if ((await _repository.GetListAsync<ObservableUser>()).ToList().Count() < 4)
             {
@@ -269,7 +261,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             activities.UserName = userName;
             string primaryKey = _instaApi.GetPrimaryKeyByUsername(userName);
             activities.ProfilePictureUrl = await _instaApi.GetUserProfilePictureUriByPrimaryKeyAsync(primaryKey);
-            List<UserActivity> userActivities = (await _repository.GetListAsync<UserActivity>(x => x.InitiatorPrimaryKey == primaryKey)).ToList<UserActivity>();
+            var userActivities = (await _repository.GetListAsync<UserActivity>(x => x.InitiatorPrimaryKey == primaryKey)).ToList();
             activities.Activities = userActivities;
             return PartialView(activities);
         }
@@ -288,13 +280,13 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             var observer = await _repository.GetAsync<ApplicationUser>(u => u.InstagramPK == primaryKey);
 
             // The user we are going to add to the database
-            ObservableUser user = new ObservableUser();
+            var user = new ObservableUser();
             user.Username = observableUser.UserName;
             user.InstagramPK = _instaApi.GetPrimaryKeyByUsername(observableUser.UserName);
             user.Observers.Add(observer);
-            
+
             // Checking the presence of the user we want to add to the database in the database
-            ObservableUser observable = await _repository.GetAsync<ObservableUser>(x => x.InstagramPK == user.InstagramPK);
+            var observable = await _repository.GetAsync<ObservableUser>(x => x.InstagramPK == user.InstagramPK);
             if (observable != null)
             {
                 // If such a user exists, check the existence of the current user in the list of its observers
@@ -334,8 +326,8 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         public async Task<ActionResult> AddObservablePageForObservableUser()
         {
             string instaPK = _instaApi.GetCurrentUserPrimaryKey();
-            ApplicationUser currentUser = await _repository.GetAsync<ApplicationUser>(x => x.InstagramPK == instaPK);
-            ObservablePageForObservableUserVM observablePage = new ObservablePageForObservableUserVM();
+            var currentUser = await _repository.GetAsync<ApplicationUser>(x => x.InstagramPK == instaPK);
+            var observablePage = new ObservablePageForObservableUserVM();
 
             foreach (var observableUser in currentUser.ObservableAccaunts)
                 observablePage.ObservableUsers.Add(new SelectListItem
@@ -350,11 +342,11 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         public async Task<ActionResult> AddObservablePageForObservableUser(ObservablePageForObservableUserVM observablePage)
         {
             // Receive the observable user
-            ObservableUser observableUser = new ObservableUser();
+            var observableUser = new ObservableUser();
             observableUser = await _repository.GetAsync<ObservableUser>(x => x.Username == observablePage.observableUserName);
 
             // Checking the presence of the target content we want to add to the database in the database
-            ObservableUser page = await _repository.GetAsync<ObservableUser>(x => x.Username == observablePage.TargetContentName);
+            var page = await _repository.GetAsync<ObservableUser>(x => x.Username == observablePage.TargetContentName);
             if(page != null)
             {
                 // If such content exists, check the existence of the observable user in the list of its ActivityInitiators

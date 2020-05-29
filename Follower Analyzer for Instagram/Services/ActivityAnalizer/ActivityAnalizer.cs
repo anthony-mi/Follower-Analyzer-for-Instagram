@@ -1,13 +1,10 @@
 ﻿using Follower_Analyzer_for_Instagram.Models;
-using Follower_Analyzer_for_Instagram.Models.DBInfrastructure;
 using Follower_Analyzer_for_Instagram.Services.InstagramAPI;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
 {
