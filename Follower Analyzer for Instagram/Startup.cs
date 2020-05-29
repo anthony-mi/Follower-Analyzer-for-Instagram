@@ -5,6 +5,7 @@ using Microsoft.Ajax.Utilities;
 using Microsoft.Owin;
 using Owin;
 using System.Threading;
+using System.Web;
 
 [assembly: OwinStartupAttribute(typeof(Follower_Analyzer_for_Instagram.Startup))]
 namespace Follower_Analyzer_for_Instagram
@@ -16,9 +17,9 @@ namespace Follower_Analyzer_for_Instagram
 
         public void Configuration(IAppBuilder app)
         {
-            ActivityAnalizingCancellationTokenSource = new CancellationTokenSource();
-            ActivityAnalizer = new ActivityAnalizer(new FollowerAnalyzerRepository());
-            ActivityAnalizer.StartAnalizing(ActivityAnalizingCancellationTokenSource);
+                ActivityAnalizingCancellationTokenSource = new CancellationTokenSource();
+                ActivityAnalizer = new ActivityAnalizer(new FollowerAnalyzerRepository());
+                ActivityAnalizer.StartAnalizing(ActivityAnalizingCancellationTokenSource);
         }
     }
 }
