@@ -339,7 +339,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddObservablePageForObservableUser(ObservableAccountForObservableUserVM observablePage)
+        public async Task<ActionResult> AddObservableAccountForObservableUser(ObservableAccountForObservableUserVM observablePage)
         {
             // Receive the observable user
             var observableUser = new ObservableUser();
