@@ -24,6 +24,7 @@
                             <tr>
                                 <th scope="col">Event date</th>
                                 <th scope="col">Activity type</th>
+                                <th scope="col">Link</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -32,6 +33,7 @@
                                 <tr class="table-secondary">
                                     <th scope="row">-</th>
                                     <td>-</td>
+                                    <td>-</td>
                                 </tr>
                             }
                             @foreach (var activity in Model.Activities)
@@ -39,6 +41,7 @@
                                 <tr class="table-secondary">
                                     <th scope="row">@activity.EventDate</th>
                                     <td>@activity.ActivityType</td>
+                                    <td><a href="@activity.LinkToMedia"></a></td>
                                 </tr>
                             }
                         </tbody>
