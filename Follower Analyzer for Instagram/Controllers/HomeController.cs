@@ -323,11 +323,11 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> AddObservablePageForObservableUser()
+        public async Task<ActionResult> AddObservableAccountForObservableUser()
         {
             string instaPK = _instaApi.GetCurrentUserPrimaryKey();
             var currentUser = await _repository.GetAsync<ApplicationUser>(x => x.InstagramPK == instaPK);
-            var observablePage = new ObservablePageForObservableUserVM();
+            var observablePage = new ObservableAccountForObservableUserVM();
 
             foreach (var observableUser in currentUser.ObservableAccaunts)
                 observablePage.ObservableUsers.Add(new SelectListItem
@@ -335,11 +335,11 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                     Text = observableUser.Username,
                     Value = observableUser.Username
                 });
-            return PartialView("_AddObservablePageForObservableUser", observablePage);
+            return PartialView("_AddObservableAccountForObservableUser", observablePage);
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddObservablePageForObservableUser(ObservablePageForObservableUserVM observablePage)
+        public async Task<ActionResult> AddObservablePageForObservableUser(ObservableAccountForObservableUserVM observablePage)
         {
             // Receive the observable user
             var observableUser = new ObservableUser();
