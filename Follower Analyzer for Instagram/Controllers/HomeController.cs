@@ -301,7 +301,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                      update the data in the database and return a message about the successful operation.*/
                     observable.Observers.Add(observer);
                     await _repository.UpdateAsync<ObservableUser>(observable);
-                    observer.ObservableAccaunts.Add(observable);
+                    observer.ObservableAccounts.Add(observable);
                     await _repository.UpdateAsync<ApplicationUser>(observer);
                     return RedirectToAction("Index", new { status = "success" });
                 }
@@ -312,7 +312,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 return RedirectToAction("Index", new { status = "bad" });
 
             // Update the data in the database
-            observer.ObservableAccaunts.Add(user);
+            observer.ObservableAccounts.Add(user);
             await _repository.UpdateAsync<ApplicationUser>(observer);
 
             // Start of activity analysis of a new observable user
@@ -329,7 +329,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             var currentUser = await _repository.GetAsync<ApplicationUser>(x => x.InstagramPK == instaPK);
             var observablePage = new ObservableAccountForObservableUserVM();
 
-            foreach (var observableUser in currentUser.ObservableAccaunts)
+            foreach (var observableUser in currentUser.ObservableAccounts)
                 observablePage.ObservableUsers.Add(new SelectListItem
                 {
                     Text = observableUser.Username,
