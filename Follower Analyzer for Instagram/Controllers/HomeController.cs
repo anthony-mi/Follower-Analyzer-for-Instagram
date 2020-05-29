@@ -309,7 +309,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                      update the data in the database and return a message about the successful operation.*/
                     observable.Observers.Add(observer);
                     await _repository.UpdateAsync<ObservableUser>(observable);
-                    observer.ObservableAccaunts.Add(observable);
+                    observer.ObservableAccounts.Add(observable);
                     await _repository.UpdateAsync<ApplicationUser>(observer);
                     return RedirectToAction("Index", new { status = "success" });
                 }
@@ -320,7 +320,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 return RedirectToAction("Index", new { status = "bad" });
 
             // Update the data in the database
-            observer.ObservableAccaunts.Add(user);
+            observer.ObservableAccounts.Add(user);
             await _repository.UpdateAsync<ApplicationUser>(observer);
 
             // Start of activity analysis of a new observable user
@@ -331,13 +331,13 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> AddObservablePageForObservableUser()
+        public async Task<ActionResult> AddObservableAccountsForObservableUser()
         {
             string instaPK = _instaApi.GetCurrentUserPrimaryKey();
             ApplicationUser currentUser = await _repository.GetAsync<ApplicationUser>(x => x.InstagramPK == instaPK);
-            ObservablePageForObservableUserVM observablePage = new ObservablePageForObservableUserVM();
+            ObservableAccountForObservableUserVM observablePage = new ObservableAccountForObservableUserVM();
 
-            foreach (var observableUser in currentUser.ObservableAccaunts)
+            foreach (var observableUser in currentUser.ObservableAccounts)
                 observablePage.ObservableUsers.Add(new SelectListItem
                 {
                     Text = observableUser.Username,
@@ -347,7 +347,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddObservablePageForObservableUser(ObservablePageForObservableUserVM observablePage)
+        public async Task<ActionResult> AddObservableAccountsForObservableUser(ObservableAccountForObservableUserVM observablePage)
         {
             // Receive the observable user
             ObservableUser observableUser = new ObservableUser();
