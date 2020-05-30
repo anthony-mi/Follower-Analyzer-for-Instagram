@@ -24,16 +24,14 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         {
             _instaApi = instaApi;
 
-            if (System.Web.HttpContext.Current.Session["PrimaryKey"] == null)
+            if (System.Web.HttpContext.Current.Session["PrimaryKey"] != null)
             {
-                return;
-            }
+                string currentUserPrimaryKey = System.Web.HttpContext.Current.Session["PrimaryKey"].ToString();
 
-            string currentUserPrimaryKey = System.Web.HttpContext.Current.Session["PrimaryKey"].ToString();
-
-            if (!string.IsNullOrEmpty(currentUserPrimaryKey))
-            {
-                _instaApi.SetCookies(GetInstagramCookiesByUserPrimaryKey(currentUserPrimaryKey));
+                if (!string.IsNullOrEmpty(currentUserPrimaryKey))
+                {
+                    _instaApi.SetCookies(GetInstagramCookiesByUserPrimaryKey(currentUserPrimaryKey));
+                }
             }
         }
 
