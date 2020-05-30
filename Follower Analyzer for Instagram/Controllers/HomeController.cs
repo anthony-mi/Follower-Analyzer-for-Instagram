@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 
 namespace Follower_Analyzer_for_Instagram.Controllers
@@ -79,8 +80,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 if (!added)
                 {
                     errors.Add( "Не удалось добавить пользователя!");
-                  //  throw new HttpException("Не удалось добавить пользователя!");
-                    Response.StatusCode = 404;//not found
+                    throw new HttpException("Не удалось добавить пользователя!");
                 }
                 else
                 {
@@ -90,10 +90,8 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             else
             {
                 errors.Add("Не удалось добавить пользователя!");
-                errors.Add("Максимальное количесво пользователей за которыми возможно наблюдение [3]!");
-                observableUser = null;
-                Response.StatusCode = 303;//See Other 
-
+                errors.Add("Максимальное количесво пользователей за которыми возможно наблюдение [3]!"); 
+                throw new HttpException("Не удалось добавить пользователя!");
             }
 
             return Json(new

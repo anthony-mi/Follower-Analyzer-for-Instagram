@@ -1,8 +1,5 @@
 ﻿using Follower_Analyzer_for_Instagram.Infrastructure;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -14,15 +11,12 @@ namespace Follower_Analyzer_for_Instagram
     {
         protected void Application_Start()
         {
-           
-                AutofacConfig.ConfigureContainer();
-                AreaRegistration.RegisterAllAreas();
-               // FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-                RouteConfig.RegisterRoutes(RouteTable.Routes);
-                BundleConfig.RegisterBundles(BundleTable.Bundles);
-           
-            
-          
+
+            AutofacConfig.ConfigureContainer();
+            AreaRegistration.RegisterAllAreas();
+            // FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+            RouteConfig.RegisterRoutes(RouteTable.Routes);
+            BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
 
         protected void Application_Error(Object sender, EventArgs e)
@@ -39,8 +33,8 @@ namespace Follower_Analyzer_for_Instagram
                 {
                     case 404:
                         action = "Http404";
-                      
-                        if(httpException.TargetSite.Name == "HandleUnknownAction")
+
+                        if (httpException.TargetSite.Name == "HandleUnknownAction")
                         {
                             msg = "Not Found!";
                         }
@@ -49,21 +43,18 @@ namespace Follower_Analyzer_for_Instagram
                     case 500:
                         action = "Http500";
                         break;
-                    //default:
-                    //    action = "ShowError";
-                    //    break;
                 }
 
                 Server.ClearError();
                 if (action != null)
                 {
-                    
+
                     Response.Redirect($"~/Error/{action}/?errorMsg={msg}");
                 }
             }
         }
 
-            void Application_End(object sender, EventArgs e)
+        void Application_End(object sender, EventArgs e)
         {
             try
             {
