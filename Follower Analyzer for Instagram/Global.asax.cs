@@ -26,9 +26,11 @@ namespace Follower_Analyzer_for_Instagram
 
             HttpException httpException = exception as HttpException;
             string action = null;
-            string msg = httpException.Message;
+          
             if (httpException != null)
-            {
+            { 
+                string msg = httpException.Message;
+
                 switch (httpException.GetHttpCode())
                 {
                     case 404:
@@ -48,9 +50,13 @@ namespace Follower_Analyzer_for_Instagram
                 Server.ClearError();
                 if (action != null)
                 {
-
                     Response.Redirect($"~/Error/{action}/?errorMsg={msg}");
                 }
+            }
+            else
+            {
+                Server.ClearError();
+                Response.Redirect($"~/Error/Http500/?errorMsg={exception.Message}");
             }
         }
 
