@@ -139,9 +139,24 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
         public ActionResult TopTenLikes(string nameForLikes)
         {
-            var posts = _instaApi.GetUserPostsByUsername(nameForLikes);
-            var sortPosts = from post in posts orderby post.CountOfLikes descending select post;
+            var userPK = _instaApi.GetPrimaryKeyByUsername(nameForLikes);
             var topTenPosts = new List<InstagramPost>();
+
+            if (userPK == "" || userPK == null)
+            {
+                ShowError("Не удалось найти пользователя с таким именем!");
+                return View(topTenPosts);
+            }
+
+            List<InstagramPost> posts = _instaApi.GetUserPostsByUsername(nameForLikes);
+
+            if (posts == null || posts.Count() == 0)
+            {
+                ShowError("Не удалось найти публикации!");
+                return View(topTenPosts);
+            }
+
+            var sortPosts = from post in posts orderby post.CountOfLikes descending select post;
             int counter = 0;
 
             foreach (var post in sortPosts)
@@ -162,9 +177,24 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
         public ActionResult TopTenByComments(string nameForComments)
         {
-            var posts = _instaApi.GetUserPostsByUsername(nameForComments);
-            var sortPosts = from post in posts orderby post.CountOfComments descending select post;
+            var userPK = _instaApi.GetPrimaryKeyByUsername(nameForComments);
             var topTenPosts = new List<InstagramPost>();
+
+            if (userPK == "" || userPK == null)
+            {
+                ShowError("Не удалось найти пользователя с таким именем!");
+                return View(topTenPosts);
+            }
+
+            List<InstagramPost> posts = _instaApi.GetUserPostsByUsername(nameForComments);
+
+            if (posts == null || posts.Count() == 0)
+            {
+                ShowError("Не удалось найти публикации!");
+                return View(topTenPosts);
+            }
+
+            var sortPosts = from post in posts orderby post.CountOfLikes descending select post;
             int counter = 0;
 
             foreach (var post in sortPosts)
