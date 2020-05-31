@@ -50,6 +50,11 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             return user == null ? new byte[] { } : user.StateData;
         }
 
+        public void ShowError(string errorMsg)
+        {
+            this.ViewData["ShowError"] = errorMsg;
+        }
+
         // GET: /Account/Login
         [HttpGet]
         [AllowAnonymous]

@@ -187,18 +187,15 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\AutofacConfig.cs" />
-    <Compile Include="Migrations\202005281233547_NewDB.cs" />
-    <Compile Include="Migrations\202005281233547_NewDB.Designer.cs">
-      <DependentUpon>202005281233547_NewDB.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202005281358030_NewFields.cs" />
-    <Compile Include="Migrations\202005281358030_NewFields.Designer.cs">
-      <DependentUpon>202005281358030_NewFields.cs</DependentUpon>
+    <Compile Include="Migrations\202005311346095_intiaDb.cs" />
+    <Compile Include="Migrations\202005311346095_intiaDb.Designer.cs">
+      <DependentUpon>202005311346095_intiaDb.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ViewModels\AccountViewModels.cs" />
@@ -380,6 +377,10 @@
     <Content Include="Views\Home\_RepeatItemPartial.cshtml" />
     <Content Include="Views\Home\_SuccessPartial.cshtml" />
     <Content Include="Views\Home\_AddObservableAccountForObservableUser.cshtml" />
+    <Content Include="Views\Home\_GetStatisticsByLikers.cshtml" />
+    <Content Include="Views\Home\_GetStatisticsByCommenters.cshtml" />
+    <Content Include="Views\Error\Http500.cshtml" />
+    <Content Include="Views\Error\Http404.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AppData\" />
@@ -396,11 +397,8 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202005281233547_NewDB.resx">
-      <DependentUpon>202005281233547_NewDB.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202005281358030_NewFields.resx">
-      <DependentUpon>202005281358030_NewFields.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202005311346095_intiaDb.resx">
+      <DependentUpon>202005311346095_intiaDb.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
