@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Management;
 using System.Web.Mvc;
 
 namespace Follower_Analyzer_for_Instagram.Controllers
@@ -59,9 +60,12 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
         public ActionResult About()
         {
-           // throw new HttpException("Пользователь не найден!");
-          
             return View();
+        }
+
+        public void ShowError(string errorMsg)
+        {
+            this.ViewData["ShowError"] = errorMsg;
         }
    
         public async Task< JsonResult> AddUserToObservation(string userName)

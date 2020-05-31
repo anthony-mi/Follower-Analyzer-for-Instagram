@@ -11,7 +11,7 @@
 </head>
 <body>
     <div id="mainNavbar" class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
-        @if(Session["Authorized"] != null)
+        @if (Session["Authorized"] != null)
         {
             <a class="navbar-brand ml-3" href="/Home/Index">
                 <img src="~/Content/Images/logo.png" />
@@ -30,14 +30,34 @@
 
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav mr-auto">
-                @if(Session["Authorized"] != null)
+                @if (Session["Authorized"] != null)
                 {
-                <li class="nav-item active">@Html.ActionLink("Home", "Index", "Home", null, new { @class = "nav-link mr-3" })</li>
+                    <li class="nav-item active">@Html.ActionLink("Home", "Index", "Home", null, new { @class = "nav-link mr-3" })</li>
                 }
                 <li class="nav-item">@Html.ActionLink("About", "About", "Home", null, new { @class = "nav-link mr-3" })</li>
             </ul>
             @Html.Partial("_LoginPartial")
         </div>
+
+        @if (ViewBag.ShowError != null)
+        {
+            <div class="error">@ViewBag.ShowError </div>
+            <style>
+                .error {
+                    font-size: 20px;
+                    color: red;
+                    position: absolute;
+                    top: 70px;
+                    right: 10px;
+                    display: inline-block;
+                }
+            </style>
+            <script>
+                setTimeout(function () {
+                    $(".error").empty();
+                }, 4000);
+            </script>
+        }
     </div>
     <div>
         @RenderBody()
