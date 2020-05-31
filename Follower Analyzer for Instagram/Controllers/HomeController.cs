@@ -215,10 +215,17 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
         public ActionResult SortingPostsDescOrder()
         {
+            var topTenPosts = new List<InstagramPost>();  
             string currentUserPrimaryKey = Session["PrimaryKey"].ToString();
             var posts = _instaApi.GetUserPostsByUsername(Session["UserName"].ToString(), GetInstagramCookiesByUserPrimaryKey(currentUserPrimaryKey));
+
+            if (posts == null || posts.Count() == 0)
+            {
+                ShowError("Не удалось найти публикации!");
+                return View(topTenPosts);
+            }
+
             var sortPosts = from post in posts orderby post.CountOfComments select post;
-            var topTenPosts = new List<InstagramPost>();
             int counter = 0;
 
             foreach (var post in sortPosts)
@@ -240,6 +247,15 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         public ActionResult GetMostPopularPosts(string name)
         {
             var viewModel = new IndexViewModel();
+
+            var userPK = _instaApi.GetPrimaryKeyByUsername(name);
+           
+            if (userPK == "" || userPK == null)
+            {
+                ShowError("Не удалось найти пользователя с таким именем!");
+                return View(viewModel);
+            }
+
             List<InstagramPost> posts = _instaApi.GetUserPostsByUsername(name);
             viewModel.Username = name;
 
@@ -247,7 +263,8 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
             if (posts.Count == 0)
             {
-                return PartialView(viewModel);
+                ShowError("Не удалось найти публикации!");
+                return View(viewModel);
             }
 
             posts.Sort((post1, post2) => post1.CountOfLikes.CompareTo(post2.CountOfLikes));
