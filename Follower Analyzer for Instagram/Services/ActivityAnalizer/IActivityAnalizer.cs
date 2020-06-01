@@ -1,13 +1,14 @@
 ﻿using Follower_Analyzer_for_Instagram.Models;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
 {
     public interface IActivityAnalizer
     {
         void StartAnalizing(CancellationTokenSource cancellationTokenSource);
-        void AddUserForObservation(ApplicationUser observer, ObservableUser observable);
-        void AddTargetUserToObservable(ApplicationUser observer, ObservableUser observable, ObservableUser target);
-        void RemoveUserFromObservation(ApplicationUser observer, ObservableUser observable);
+        Task StartObservationAsync(ApplicationUser observer, ObservableUser observable, ObservableUser targetUser);
+        Task RemoveUserFromObservationAsync(ApplicationUser observer, ObservableUser observable);
+        Task RemoveTargetUserFromObservationAsync(ApplicationUser observer, ObservableUser observable, User targetUser);
     }
 }

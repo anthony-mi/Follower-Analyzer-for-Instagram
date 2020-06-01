@@ -218,6 +218,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ActivityAnalizer\ActivityAnalizer.cs" />
     <Compile Include="Services\ActivityAnalizer\IActivityAnalizer.cs" />
+    <Compile Include="Services\ActivityAnalizer\AnalizationTask.cs" />
     <Compile Include="Services\InstagramAPI\IInstagramAPI.cs" />
     <Compile Include="Services\InstagramAPI\InstagramAPI.cs" />
     <Compile Include="Startup.cs" />
