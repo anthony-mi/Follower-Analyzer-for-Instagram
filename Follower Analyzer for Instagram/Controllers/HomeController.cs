@@ -366,9 +366,6 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             observer.ObservableAccounts.Add(user);
             await _repository.UpdateAsync<ApplicationUser>(observer);
 
-            // Start of activity analysis of a new observable user
-            Startup.ActivityAnalizer.AddUserForObservation(observer, user);
-
             // Return a message about the successful operation
             return RedirectToAction("Index", new { status = "success" });
         }

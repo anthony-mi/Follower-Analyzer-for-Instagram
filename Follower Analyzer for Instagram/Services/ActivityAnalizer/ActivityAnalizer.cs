@@ -1,5 +1,6 @@
 ﻿using Follower_Analyzer_for_Instagram.Models;
 using Follower_Analyzer_for_Instagram.Services.InstagramAPI;
+using Microsoft.Owin.Security.OAuth;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +11,8 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
 {
     public class ActivityAnalizer : IActivityAnalizer, IDisposable
     {
-        private CancellationTokenSource _cancellationTokenSource;
         private IRepository _repository;
-        private Stack<Task> _tasks;
+        private List<AnalizationTask> _tasks; 
 
         private event EventHandler<UserActivity> _postIsLiked;
         private event EventHandler<UserActivity> _commentCreated;
@@ -30,85 +30,124 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
 
         private async void OnActivityFixed(object sender, UserActivity activity)
         {
-            await _repository.CreateAsync<UserActivity>(activity);
+            await _repository.CreateAsync(activity);
         }
 
         public void Dispose()
         {
-            _cancellationTokenSource.Cancel();
-
-            while(_tasks.Count > 0)
+            foreach(var analizationTask in _tasks)
             {
-                var task = _tasks.Pop();
-                task.Wait(TASK_WAITING_TIMEOUT);
+                analizationTask.CancellationTokenSource.Cancel();
+
+                foreach (var task in analizationTask.Tasks)
+                {
+                    task.Wait(TASK_WAITING_TIMEOUT);
+                }
             }
         }
 
         public void StartAnalizing(CancellationTokenSource cancellationTokenSource)
         {
-            _cancellationTokenSource = cancellationTokenSource;
-            CancellationToken cancellationToken = new CancellationToken();
-
-            _tasks = new Stack<Task>();
+            _tasks = new List<AnalizationTask>();
 
             Task<IQueryable<ApplicationUser>> task = Task.Run(
                 () => _repository.GetListAsync<ApplicationUser>());
+
             task.Wait();
+
             List<ApplicationUser> observers = task.Result.ToList();
 
             foreach (var observer in observers)
             {
                 foreach(var observable in observer.ObservableAccounts)
                 {
-                    Task likesAnalizingTask = Task.Run(
-                () => StartLikesAnalizing(observer, observable, cancellationToken));
-
-                    Task commentsAnalizingTask = Task.Run(
-                    () => StartCommentsAnalizing(observer, observable, cancellationToken));
-
-                    _tasks.Push(likesAnalizingTask);
-                    _tasks.Push(commentsAnalizingTask);
+                    StartLikesAnalizingAsync(observer, observable);
+                    StartCommentsAnalizingAsync(observer, observable);
                 }
             }
         }
 
-        private void StartCommentsAnalizing(
-            ApplicationUser observer, ObservableUser observable, CancellationToken cancellationToken)
+        private void TryAddToTasks(
+            ApplicationUser observer, 
+            ObservableUser observable,
+            User targetUser,
+            Task task,
+            CancellationTokenSource cancellationTokenSource)
+        {
+            var analizationTask = _tasks.Where(at => at.Observer.Equals(observer) &&
+                at.Observable.Equals(observable) &&
+                at.TargetUser.Equals(targetUser)).FirstOrDefault();
+
+            if(analizationTask == null) // Task not created yet.
+            {
+                var newAnalizationTask = 
+                    new AnalizationTask(observer, observable, targetUser, task, cancellationTokenSource);
+                _tasks.Add(newAnalizationTask);
+            }
+
+            analizationTask.AddTask(task);
+        }
+
+        private static List<User> CreateKey(
+            ApplicationUser observer,
+            ObservableUser observable,
+            ObservableUser targetUser)
+        {
+            return new List<User> { observer, observable, targetUser };
+        }
+
+        private async Task StartCommentsAnalizingAsync(
+            ApplicationUser observer, ObservableUser observable)
+        {
+            Parallel.ForEach(observable.ObservableUsers, targetUser =>
+            {
+                StartCommentsAnalizingAsync(observer, observable, targetUser);
+            });
+        }
+
+        private async Task StartCommentsAnalizingAsync(
+            ApplicationUser observer, ObservableUser observable, User targetUser)
         {
             IInstagramAPI instagramAPI = new InstagramAPI.InstagramAPI();
             instagramAPI.SetCookies(observer.StateData);
 
-            foreach(var oservableConnectedUser in observable.ObservableUsers)
+            List<InstagramPost> posts =
+                    instagramAPI.GetUserPostsByPrimaryKey(targetUser.InstagramPK);
+
+            var cancellationTokenSource = new CancellationTokenSource();
+
+            Task commentsAnalizingTask = Task.Run(
+            () =>
             {
-                List<InstagramPost> posts =
-                    instagramAPI.GetUserPostsByPrimaryKey(oservableConnectedUser.InstagramPK);
-
-                Task commentsAnalizingTask = Task.Run(
-                () =>
+                do
                 {
-                    do
+                    List<InstagramPost> newPostsState =
+                    instagramAPI.GetUserPostsByPrimaryKey(targetUser.InstagramPK);
+
+                    if (AreDifferencesPresent(posts, newPostsState))
                     {
-                        List<InstagramPost> newPostsState = 
-                        instagramAPI.GetUserPostsByPrimaryKey(oservableConnectedUser.InstagramPK);
+                        var postsWithDifference = GetDistinctivePosts(posts, newPostsState);
 
-                        if(AreDifferencesPresent(posts, newPostsState))
+                        foreach (var distinctivePost in postsWithDifference)
                         {
-                            var postsWithDifference = GetDistinctivePosts(posts, newPostsState);
-                            
-                            foreach(var distinctivePost in postsWithDifference)
-                            {
-                                CheckForUserComment(observer, observable, oservableConnectedUser, distinctivePost.Key, distinctivePost.Value);
-                            }
+                            CheckForUserComment(observer, observable, targetUser, distinctivePost.Key, distinctivePost.Value);
                         }
+                    }
 
-                        posts = newPostsState;
+                    posts = newPostsState;
 
-                        Sleep(SLEEP_TIMEOUT, cancellationToken);
-                    } while (!cancellationToken.IsCancellationRequested);
-                });
+                    try
+                    {
+                        Sleep(SLEEP_TIMEOUT, cancellationTokenSource.Token);
+                    }
+                    catch (OperationCanceledException ex)
+                    {
+                        break;
+                    }
+                } while (!cancellationTokenSource.Token.IsCancellationRequested);
+            });
 
-                _tasks.Push(commentsAnalizingTask);
-            }
+            TryAddToTasks(observer, observable, targetUser, commentsAnalizingTask, cancellationTokenSource);
         }
 
         private void Sleep(TimeSpan timeout, CancellationToken cancellationToken)
@@ -126,7 +165,7 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
             }
         }
 
-        private void CheckForUserComment(ApplicationUser observer, ObservableUser observable, ObservableUser postOwner, InstagramPost firstPostState, InstagramPost secondPostState)
+        private void CheckForUserComment(ApplicationUser observer, ObservableUser observable, User postOwner, InstagramPost firstPostState, InstagramPost secondPostState)
         {
             if(!firstPostState.Commenters.Contains(observable) 
                 && secondPostState.Commenters.Contains(observable))
@@ -142,7 +181,7 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
             }
         }
 
-        private void CheckForUserLike(ApplicationUser observer, ObservableUser observable, ObservableUser postOwner, InstagramPost firstPostState, InstagramPost secondPostState)
+        private void CheckForUserLike(ApplicationUser observer, ObservableUser observable, User postOwner, InstagramPost firstPostState, InstagramPost secondPostState)
         {
             if (!firstPostState.Likers.Contains(observable)
                 && secondPostState.Likers.Contains(observable))
@@ -159,7 +198,8 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
             }
         }
 
-        private Dictionary<InstagramPost, InstagramPost> GetDistinctivePosts(List<InstagramPost> posts, List<InstagramPost> newPostsState)
+        private Dictionary<InstagramPost, InstagramPost> GetDistinctivePosts(
+            List<InstagramPost> posts, List<InstagramPost> newPostsState)
         {
             var distinctivePosts = new Dictionary<InstagramPost, InstagramPost>();
 
@@ -167,14 +207,20 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
             {
                 if (posts.Count != newPostsState.Count)
                 {
-                    // XXX: implement this
+                    var newPosts = newPostsState.Except(posts).ToList();
+
+                    foreach(var newPost in newPosts)
+                    {
+                        distinctivePosts.Add(new InstagramPost(), newPost);
+                    }
                 }
 
                 for (int i = 0; i < posts.Count; i++)
                 {
                     if (posts[i].CountOfLikes != newPostsState[i].CountOfLikes)
                     {
-                        distinctivePosts.Add(posts[i], newPostsState[i]);                        
+                        distinctivePosts.Add(posts[i], newPostsState[i]);
+                        continue;
                     }
 
                     if (posts[i].CountOfComments != newPostsState[i].CountOfComments)
@@ -218,75 +264,112 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
             return areDifferences;
         }
 
-        private void StartLikesAnalizing(
-            ApplicationUser observer, ObservableUser observable, CancellationToken cancellationToken)
+        private async Task StartLikesAnalizingAsync(
+            ApplicationUser observer, ObservableUser observable)
+        {
+            foreach(var targetUser in observable.ObservableUsers)
+            {
+                StartLikesAnalizingAsync(observer, observable, targetUser);
+            }
+        }
+
+        private async Task StartLikesAnalizingAsync(
+            ApplicationUser observer, ObservableUser observable, User targetUser)
         {
             IInstagramAPI instagramAPI = new InstagramAPI.InstagramAPI();
             instagramAPI.SetCookies(observer.StateData);
 
-            foreach (var oservableConnectedUser in observable.ObservableUsers)
+            List<InstagramPost> posts =
+                    instagramAPI.GetUserPostsByPrimaryKey(targetUser.InstagramPK);
+
+            var cancellationTokenSource = new CancellationTokenSource();
+
+            Task likesAnalizingTask = Task.Run(
+            () =>
             {
-                List<InstagramPost> posts =
-                    instagramAPI.GetUserPostsByPrimaryKey(oservableConnectedUser.InstagramPK);
-
-                Task likesAnalizingTask = Task.Run(
-                () =>
+                do
                 {
-                    do
+                    List<InstagramPost> newPostsState =
+                    instagramAPI.GetUserPostsByPrimaryKey(targetUser.InstagramPK);
+
+                    if (AreDifferencesPresent(posts, newPostsState))
                     {
-                        List<InstagramPost> newPostsState =
-                        instagramAPI.GetUserPostsByPrimaryKey(oservableConnectedUser.InstagramPK);
+                        var postsWithDifference = GetDistinctivePosts(posts, newPostsState);
 
-                        if (AreDifferencesPresent(posts, newPostsState))
+                        foreach (var distinctivePost in postsWithDifference)
                         {
-                            var postsWithDifference = GetDistinctivePosts(posts, newPostsState);
-
-                            foreach (var distinctivePost in postsWithDifference)
-                            {
-                                CheckForUserLike(observer, observable, oservableConnectedUser, distinctivePost.Key, distinctivePost.Value);
-                            }
+                            CheckForUserLike(observer, observable, targetUser, distinctivePost.Key, distinctivePost.Value);
                         }
+                    }
 
-                        posts = newPostsState;
+                    posts = newPostsState;
 
-                        Sleep(SLEEP_TIMEOUT, cancellationToken);
-                    } while (!cancellationToken.IsCancellationRequested);
-                });
+                    try
+                    {
+                        Sleep(SLEEP_TIMEOUT, cancellationTokenSource.Token);
+                    }
+                    catch (OperationCanceledException ex)
+                    {
+                        break;
+                    }
+                } while (!cancellationTokenSource.Token.IsCancellationRequested);
+            });
 
-                _tasks.Push(likesAnalizingTask);
+            TryAddToTasks(observer, observable, targetUser, likesAnalizingTask, cancellationTokenSource);
+        }
+
+
+        public async Task RemoveUserFromObservationAsync(ApplicationUser observer, ObservableUser observable)
+        {
+            var observableTasks = _tasks.Where(at => at.Observer.Equals(observer) &&
+                at.Observable.Equals(observable)).ToList();
+
+            if(observableTasks.Count == 0) // User is not under observation yet.
+            {
+                return; 
             }
+
+            foreach(var aTask in observableTasks)
+            {
+                aTask.CancellationTokenSource.Cancel();
+            }
+
+            foreach (var aTask in observableTasks)
+            {
+                foreach(var task in aTask.Tasks)
+                {
+                    task.Wait();
+                }
+            }
+
+            _tasks = _tasks.Except(observableTasks).ToList();
         }
 
-        public void AddUserForObservation(ApplicationUser observer, ObservableUser observable)
+        public async Task RemoveTargetUserFromObservationAsync(ApplicationUser observer, ObservableUser observable, User targetUser)
         {
-            Task likesAnalizingTask = Task.Run(
-            () => StartLikesAnalizing(observer, observable, _cancellationTokenSource.Token));
+            var aTask = _tasks.Where(at => at.Observer.Equals(observer) &&
+                at.Observable.Equals(observable) &&
+                at.TargetUser.Equals(targetUser)).FirstOrDefault();
 
-            Task commentsAnalizingTask = Task.Run(
-            () => StartCommentsAnalizing(observer, observable, _cancellationTokenSource.Token));
+            if (aTask == null) // User is not under observation.
+            {
+                return;
+            }
 
-            _tasks.Push(likesAnalizingTask);
-            _tasks.Push(commentsAnalizingTask);
+            aTask.CancellationTokenSource.Cancel();
+
+            foreach (var task in aTask.Tasks)
+            {
+                task.Wait();
+            }
+
+            _tasks.Remove(aTask);
         }
 
-        public void RemoveUserFromObservation(ApplicationUser observer, ObservableUser observable)
+        public async Task StartObservationAsync(ApplicationUser observer, ObservableUser observable, ObservableUser targetUser)
         {
-            throw new NotImplementedException();
-        }
-
-        public void AddTargetUserToObservable(ApplicationUser observer, ObservableUser observable, ObservableUser target)
-        {
-            observable.ObservableUsers = new List<ObservableUser>();
-            observable.ObservableUsers.Add(target);
-
-            Task likesAnalizingTask = Task.Run(
-            () => StartLikesAnalizing(observer, observable, _cancellationTokenSource.Token));
-
-            Task commentsAnalizingTask = Task.Run(
-            () => StartCommentsAnalizing(observer, observable, _cancellationTokenSource.Token));
-
-            _tasks.Push(likesAnalizingTask);
-            _tasks.Push(commentsAnalizingTask);
+            StartLikesAnalizingAsync(observer, observable, targetUser);
+            StartCommentsAnalizingAsync(observer, observable, targetUser);
         }
     }
 }
