@@ -134,9 +134,6 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             return Json(string.Empty);
         }
 
-       
-
-
         public ActionResult TopTenLikes(string nameForLikes)
         {
             var userPK = _instaApi.GetPrimaryKeyByUsername(nameForLikes);

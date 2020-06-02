@@ -1,5 +1,4 @@
-﻿using Autofac.Util;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 
 namespace Follower_Analyzer_for_Instagram.Controllers
 {
@@ -10,6 +9,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             ViewBag.ErrorMsg = errorMsg;
             return View("Http404");
         }
+
         public ActionResult Http500(string errorMsg)
         {
             ViewBag.ErrorMsg = errorMsg;
