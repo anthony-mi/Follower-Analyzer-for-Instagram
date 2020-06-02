@@ -17,6 +17,7 @@ namespace Follower_Analyzer_for_Instagram.Models
         {
             ObservableAccounts = new List<ObservableUser>();
             Subscriptions = new List<ApplicationUser>();
+            LastUpdateDate = DateTime.Now;
         }
     }
 }

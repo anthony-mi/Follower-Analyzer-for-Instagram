@@ -1,9 +1,9 @@
 ﻿body {
+    padding: 0px;
     padding-top: 50px;
-    padding-bottom: 20px;
 }
 
-#divLoading {
+#divLoading, #divLoadingMain {
     margin: 0px;
     padding: 0px;
     position: fixed;

@@ -60,18 +60,19 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
         public ActionResult About()
         {
-            return View();
+            return PartialView("About");
         }
 
         public void ShowError(string errorMsg)
         {
             this.ViewData["ShowError"] = errorMsg;
         }
-   
-        public async Task< JsonResult> AddUserToObservation(string userName)
+
+        public async Task<JsonResult> AddUserToObservation(string userName)
         {
             var errors = new List<string>();
             var observableUser = new ObservableUser();
+            string errorMessage = "Failed to add user!";
 
             if ((await _repository.GetListAsync<ObservableUser>()).ToList().Count() < 4)
             {
@@ -81,8 +82,8 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
                 if (!added)
                 {
-                    errors.Add( "Не удалось добавить пользователя!");
-                    throw new HttpException("Не удалось добавить пользователя!");
+                    errors.Add(errorMessage);
+                    throw new HttpException(errorMessage);
                 }
                 else
                 {
@@ -91,9 +92,9 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             }
             else
             {
-                errors.Add("Не удалось добавить пользователя!");
-                errors.Add("Максимальное количесво пользователей за которыми возможно наблюдение [3]!"); 
-                throw new HttpException("Не удалось добавить пользователя!");
+                errors.Add(errorMessage);
+                errors.Add("The maximum number of users that can be observed [3]!");
+                throw new HttpException(errorMessage);
             }
 
             return Json(new
@@ -133,6 +134,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
             return Json(string.Empty);
         }
+
 
         public ActionResult TopTenLikes(string nameForLikes)
         {
@@ -191,7 +193,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 return View(topTenPosts);
             }
 
-            var sortPosts = from post in posts orderby post.CountOfLikes descending select post;
+            var sortPosts = from post in posts orderby post.CountOfComments descending select post;
             int counter = 0;
 
             foreach (var post in sortPosts)
@@ -212,7 +214,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
         public ActionResult SortingPostsDescOrder()
         {
-            var topTenPosts = new List<InstagramPost>();  
+            var topTenPosts = new List<InstagramPost>();
             string currentUserPrimaryKey = Session["PrimaryKey"].ToString();
             var posts = _instaApi.GetUserPostsByUsername(Session["UserName"].ToString(), GetInstagramCookiesByUserPrimaryKey(currentUserPrimaryKey));
 
@@ -246,10 +248,10 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             var viewModel = new IndexViewModel();
 
             var userPK = _instaApi.GetPrimaryKeyByUsername(name);
-           
+
             if (userPK == "" || userPK == null)
             {
-                ShowError("Не удалось найти пользователя с таким именем!");
+                ShowError("User with this name is not found!");
                 return View(viewModel);
             }
 
@@ -260,7 +262,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
             if (posts.Count == 0)
             {
-                ShowError("Не удалось найти публикации!");
+                ShowError("Publications are not found!");
                 return View(viewModel);
             }
 
@@ -280,6 +282,8 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             var user = new ApplicationUser();
             user = await _repository.GetAsync<ApplicationUser>(x => x.InstagramPK == userPrimaryKey);
             var subscriptionsStatistics = new SubscriptionsStatisticsViewModel();
+            subscriptionsStatistics.UserName = System.Web.HttpContext.Current.Session["UserName"].ToString();
+            subscriptionsStatistics.ProfilePictureUrl = await _instaApi.GetUserProfilePictureUriByPrimaryKeyAsync(userPrimaryKey);
             // Get current followers list
             List<ApplicationUser> currentSubscriptionsList = await _instaApi.GetUserSubscriptionsByUsernameAsync(user.Username);
             // Get unsubscribed followers
@@ -288,7 +292,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 if (!currentSubscriptionsList.Contains(subscription))
                     subscriptionsStatistics.UnsubscribedSubscriptions.Add(subscription);
             }
-            // Get new followers
+            // Get new subscription
             foreach (var subscription in currentSubscriptionsList)
             {
                 if (!user.Subscriptions.Contains(subscription))
@@ -297,9 +301,18 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             //If there are changes, then save them in the database
             if (subscriptionsStatistics.NewSubscriptions.Count > 0 || subscriptionsStatistics.UnsubscribedSubscriptions.Count > 0)
             {
-                user.Subscriptions = currentSubscriptionsList;
+                user.Subscriptions.Clear();
+
+                foreach(var sub in currentSubscriptionsList)
+                {
+                    user.Subscriptions.Add(sub);
+                }
+
+                user.LastUpdateDate = DateTime.Now;
+
                 await _repository.UpdateAsync<ApplicationUser>(user);
             }
+
             return PartialView(subscriptionsStatistics);
         }
 
@@ -362,9 +375,6 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             // Update the data in the database
             observer.ObservableAccounts.Add(user);
             await _repository.UpdateAsync<ApplicationUser>(observer);
-
-            // Start of activity analysis of a new observable user
-            Startup.ActivityAnalizer.AddUserForObservation(observer, user);
 
             // Return a message about the successful operation
             return RedirectToAction("Index", new { status = "success" });
@@ -432,7 +442,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             return RedirectToAction("Index", new { status = "success" });
         }
 
-        public async Task<ActionResult> GetStatisticsByLikers(string userName, string sortType = "descending")
+        public async Task<ActionResult> GetStatisticsByLikers(string userName, string sortType = "ascending")
         {
             // Check the userName parameter. If it is empty, then set the name of the current user.
             if (String.IsNullOrEmpty(userName))
@@ -446,23 +456,45 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             foreach (var post in userPosts)
             {
                 if (Likers.Count == 0)
-                    foreach (var liker in post.Likers)
+                {
+                    foreach (var liker in post.Commenters)
+                    {
                         Likers.Add(liker, 1);
+                    }
+                }
 
-                foreach (var liker in post.Likers)
-                    if (Likers.ContainsKey(liker))
-                        Likers[liker]++;
-                    else
+                foreach (var liker in post.Commenters)
+                {
+                    var key = Likers.Where(c => c.Key.InstagramPK == liker.InstagramPK).FirstOrDefault();
+
+                    if (key.Equals(default(KeyValuePair<User, int>)))
+                    {
                         Likers.Add(liker, 1);
+                    }
+                    else
+                    {
+                        Likers[key.Key]++;
+                    }
+                }
             }
             // return a partial view with a sorted dictionary, depending on the parameter sortType
             if (sortType == "descending")
-                return PartialView("_GetStatisticsByLikers", Likers.OrderBy(x => x.Value));
+            {
+                if (Likers.Count != 0)
+                    return PartialView("_GetStatisticsByLikers", Likers.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value));
+                else
+                    return PartialView("_GetStatisticsByLikers");
+            }
             else
-                return PartialView("_GetStatisticsByCommenters", Likers.OrderByDescending(x => x.Value));
+            {
+                if (Likers.Count != 0)
+                    return PartialView("_GetStatisticsByLikers", Likers.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value));
+                else
+                    return PartialView("_GetStatisticsByLikers");
+            }
         }
 
-        public async Task<ActionResult> GetStatisticsByCommenters(string userName, string sortType = "descending")
+        public async Task<ActionResult> GetStatisticsByCommenters(string userName, string sortType = "ascending")
         {
             // Check the userName parameter. If it is empty, then set the name of the current user.
             if (String.IsNullOrEmpty(userName))
@@ -476,20 +508,42 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             foreach (var post in userPosts)
             {
                 if (Commenters.Count == 0)
+                {
                     foreach (var commenter in post.Commenters)
+                    {
                         Commenters.Add(commenter, 1);
+                    }    
+                }
 
                 foreach (var commenter in post.Commenters)
-                    if (Commenters.ContainsKey(commenter))
-                        Commenters[commenter]++;
-                    else
+                {
+                    var key = Commenters.Where(c => c.Key.InstagramPK == commenter.InstagramPK).FirstOrDefault();
+
+                    if (key.Equals(default(KeyValuePair<User, int>)))
+                    {
                         Commenters.Add(commenter, 1);
+                    } 
+                    else
+                    {
+                        Commenters[key.Key]++;
+                    }
+                }
             }
             // return a partial view with a sorted dictionary, depending on the parameter sortType
             if (sortType == "descending")
-                return PartialView("_GetStatisticsByLikers", Commenters.OrderBy(x => x.Value));
+            {
+                if (Commenters.Count != 0)
+                    return PartialView("_GetStatisticsByCommenters", Commenters.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value));
+                else
+                    return PartialView("_GetStatisticsByCommenters");
+            }
             else
-                return PartialView("_GetStatisticsByCommenters", Commenters.OrderByDescending(x => x.Value));
+            {
+                if (Commenters.Count != 0)
+                    return PartialView("_GetStatisticsByCommenters", Commenters.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value));
+                else
+                    return PartialView("_GetStatisticsByCommenters");
+            }
         }
     }
 }
