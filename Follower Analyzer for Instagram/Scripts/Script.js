@@ -6,9 +6,3 @@
             $("#divLoading").hide();
         });
 }
-
-$(function () {
-    $("#getMostPopularPosts").click(function () {
-        $("#tempo").css("display", "none")
-    });
-});
