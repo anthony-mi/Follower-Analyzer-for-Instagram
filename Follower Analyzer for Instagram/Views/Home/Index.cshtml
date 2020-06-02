@@ -4,46 +4,49 @@
 }
 
 
-<div class="row">
-    <div class="col-md-2 ml-5 float-left">
-        <p class="pt-5 font-weight-bold">Get most popular posts</p>
+<div class="row ml-4 vh-100">
+    <div class="col-md-3 float-left">
+        <p class="pt-4 font-weight-bold">Get most popular posts</p>
         @using (Ajax.BeginForm("GetMostPopularPosts", new AjaxOptions { UpdateTargetId = "results" }))
         {
             <input type="text" name="name" class="custom-form-control" placeholder="username" required />
             <input type="submit" class="btn btn-info" id="getMostPopularPosts" value="Go" />
         }
-        <p class="pt-5 font-weight-bold">Get top ten likes</p>
+        <p class="pt-3 font-weight-bold">Get top ten likes</p>
         @using (Ajax.BeginForm("TopTenLikes", new AjaxOptions { UpdateTargetId = "results" }))
         {
             <input type="text" name="nameForLikes" class="custom-form-control" placeholder="username" required />
             <input type="submit" class="btn btn-info" id="getTopTenLikes" value="Go" />
         }
-        <p class="pt-5 font-weight-bold">Get top ten сomments</p>
+        <p class="pt-3 font-weight-bold">Get top ten сomments</p>
         @using (Ajax.BeginForm("TopTenByComments", new AjaxOptions { UpdateTargetId = "results" }))
         {
             <input type="text" name="nameForComments" class="custom-form-control" placeholder="username" required />
             <input type="submit" class="btn btn-info" id="getTopTenComments" value="Go" />
         }
-        <p class="pt-5 font-weight-bold">Get observable user activities</p>
+        <p class="pt-3 font-weight-bold">Get statistics by likers</p>
+        @using (Ajax.BeginForm("GetStatisticsByLikers", new AjaxOptions { UpdateTargetId = "results" }))
+        {
+            <input type="text" name="userName" class="custom-form-control" placeholder="username" required />
+            <input type="submit" class="btn btn-info" id="getStatisticsByLikers" value="Go" />
+        }
+        <p class="pt-3 font-weight-bold">Get statistics by commenters</p>
+        @using (Ajax.BeginForm("GetStatisticsByCommenters", new AjaxOptions { UpdateTargetId = "results" }))
+        {
+            <input type="text" name="userName" class="custom-form-control" placeholder="username" required />
+            <input type="submit" class="btn btn-info" id="getStatisticsByCommenters" value="Go" />
+        }
+        <p class="pt-3 font-weight-bold">Get observable user activities</p>
         @using (Ajax.BeginForm("GetObservableUserActivities", new AjaxOptions { UpdateTargetId = "results" }))
         {
             <input type="text" name="userName" class="custom-form-control" placeholder="username" required />
             <input type="submit" class="btn btn-info" id="getObservableUserActivities" value="Go" />
         }
-        <p class="pt-5"></p>
-        @using (Ajax.BeginForm("GetSubscriptionsStatisticsAsync", new AjaxOptions { UpdateTargetId = "statistic" }))
-        {
-            <input type="submit" class="btn btn-danger px-3" id="getSubscriptionsStatistics" value="Get subscription's statistic" />
-        }
-        <div id="statistic"></div>
+        <p class="pt-3 pb-0 mb-0 font-weight-bold">Observable user's settings</p>
         @Html.ActionLink("Add user to observation", "AddObservableUser", "Home", new { @class = "btn form-control btn-info viewDialog mt-4" })
         @Html.ActionLink("Add content to observation", "AddObservableAccountForObservableUser", "Home", new { @class = "btn form-control btn-info mt-3 viewDialog" })
     </div>
-    <div id="results"></div>
-    <div id="tempo" class="container py-5">
-        <div class="row m-auto">
-        </div>
-    </div>
+    <div id="results" class="container col-md-9 bg-info mx-0"></div>
 </div>
 
 <div class="modal fade" id="modDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
