@@ -193,9 +193,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\AutofacConfig.cs" />
-    <Compile Include="Migrations\202005312126083_InitialDb.cs" />
-    <Compile Include="Migrations\202005312126083_InitialDb.Designer.cs">
-      <DependentUpon>202005312126083_InitialDb.cs</DependentUpon>
+    <Compile Include="Migrations\202006020531528_UpdateProject.cs" />
+    <Compile Include="Migrations\202006020531528_UpdateProject.Designer.cs">
+      <DependentUpon>202006020531528_UpdateProject.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ViewModels\AccountViewModels.cs" />
@@ -398,8 +398,8 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202005312126083_InitialDb.resx">
-      <DependentUpon>202005312126083_InitialDb.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202006020531528_UpdateProject.resx">
+      <DependentUpon>202006020531528_UpdateProject.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
