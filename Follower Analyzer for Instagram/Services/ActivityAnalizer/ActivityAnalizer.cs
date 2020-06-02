@@ -39,8 +39,14 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
             {
                 analizationTask.CancellationTokenSource.Cancel();
 
+                IInstagramAPI instagramAPI = new InstagramAPI.InstagramAPI();
+                instagramAPI.SetCookies(analizationTask.Observer.StateData);
+
                 foreach (var task in analizationTask.Tasks)
                 {
+                    SaveProfileStateAsync(
+                        analizationTask.TargetUser,
+                        instagramAPI.GetUserPostsByPrimaryKey(analizationTask.TargetUser.InstagramPK));
                     task.Wait(TASK_WAITING_TIMEOUT);
                 }
             }
@@ -112,16 +118,18 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
             instagramAPI.SetCookies(observer.StateData);
 
             List<InstagramPost> posts =
-                    instagramAPI.GetUserPostsByPrimaryKey(targetUser.InstagramPK);
+                    await GetProfileStateAsync(instagramAPI, targetUser);
 
             var cancellationTokenSource = new CancellationTokenSource();
 
             Task commentsAnalizingTask = Task.Run(
             () =>
             {
+                List<InstagramPost> newPostsState = new List<InstagramPost>();
+
                 do
                 {
-                    List<InstagramPost> newPostsState =
+                    newPostsState =
                     instagramAPI.GetUserPostsByPrimaryKey(targetUser.InstagramPK);
 
                     if (AreDifferencesPresent(posts, newPostsState))
@@ -145,6 +153,8 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
                         break;
                     }
                 } while (!cancellationTokenSource.Token.IsCancellationRequested);
+
+                SaveProfileStateAsync(targetUser, newPostsState);
             });
 
             TryAddToTasks(observer, observable, targetUser, commentsAnalizingTask, cancellationTokenSource);
@@ -162,6 +172,45 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
                 }
 
                 Thread.Sleep(delay);
+            }
+        }
+
+        private async Task<List<InstagramPost>> GetProfileStateAsync(IInstagramAPI instagramAPI, User profileOwner)
+        {
+            List<InstagramPost> posts = null;
+
+            var profile = await _repository.GetAsync<UserProfile>(p => p.Owner.Equals(profileOwner));
+
+            if(profile != null) // Profile state already exists in DB.
+            {
+                posts = profile.Posts;
+            }
+            else // We have to parse it from Instagram.
+            {
+                posts = instagramAPI.GetUserPostsByPrimaryKey(profileOwner.InstagramPK);
+            }
+
+            return posts;
+        }
+
+        private async Task SaveProfileStateAsync(User profileOwner, List<InstagramPost> posts)
+        {
+            var profile = await _repository.GetAsync<UserProfile>(p => p.Owner.Equals(profileOwner));
+
+            if (profile != null) // Profile state already exists in DB.
+            {
+                posts = profile.Posts;
+                _repository.UpdateAsync(profile);
+            }
+            else // We have to create new record in DB.
+            {
+                profile = new UserProfile
+                { 
+                    Owner = profileOwner,
+                    Posts = posts
+                };
+
+                _repository.CreateAsync(profile);
             }
         }
 
@@ -280,16 +329,18 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
             instagramAPI.SetCookies(observer.StateData);
 
             List<InstagramPost> posts =
-                    instagramAPI.GetUserPostsByPrimaryKey(targetUser.InstagramPK);
+                    await GetProfileStateAsync(instagramAPI, targetUser);
 
             var cancellationTokenSource = new CancellationTokenSource();
 
             Task likesAnalizingTask = Task.Run(
             () =>
             {
+                List<InstagramPost> newPostsState = new List<InstagramPost>();
+
                 do
                 {
-                    List<InstagramPost> newPostsState =
+                    newPostsState =
                     instagramAPI.GetUserPostsByPrimaryKey(targetUser.InstagramPK);
 
                     if (AreDifferencesPresent(posts, newPostsState))
@@ -313,6 +364,8 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
                         break;
                     }
                 } while (!cancellationTokenSource.Token.IsCancellationRequested);
+
+                SaveProfileStateAsync(targetUser, newPostsState);
             });
 
             TryAddToTasks(observer, observable, targetUser, likesAnalizingTask, cancellationTokenSource);
