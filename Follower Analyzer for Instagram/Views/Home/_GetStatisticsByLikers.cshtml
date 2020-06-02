@@ -1,3 +1,35 @@
 ﻿@model System.Collections.Generic.Dictionary<Follower_Analyzer_for_Instagram.Models.User, int>
 
 
+<div class="py-5 mx-4">
+    <div class="m-auto text-center my-2">
+        <table class="table table-dark rounded">
+            <thead>
+                <tr>
+                    <th scope="col">User</th>
+                    <th scope="col">Likes</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count != 0)
+                {
+                    foreach (var keyValue in Model)
+                    {
+                        <tr>
+                            <th>@keyValue.Key.Username</th>
+                            <td>@keyValue.Value</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <th>-</th>
+                        <td>-</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
