@@ -1,4 +1,6 @@
-﻿namespace Follower_Analyzer_for_Instagram.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Follower_Analyzer_for_Instagram.Models
 {
     public class User
     {
@@ -35,6 +37,7 @@
             {
                 return false;
             }
+
             if (ReferenceEquals(this, other))
             {
                 return true;

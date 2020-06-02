@@ -60,6 +60,11 @@ namespace Follower_Analyzer_for_Instagram.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
+            if (System.Web.HttpContext.Current.Session["PrimaryKey"] != null)
+            {
+                RedirectToAction("Index", "Home");
+            }
+
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
@@ -97,6 +102,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
 
                 if (foundUser == null)
                 {
+                    newUser.Subscriptions = _instagramAPI.GetUserSubscriptionsByUsername(model.Username);
                     newUser.LastUpdateDate = DateTime.Now;
                     await _repository.CreateAsync<ApplicationUser>(newUser);
                 }

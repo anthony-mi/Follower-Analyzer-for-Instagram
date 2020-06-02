@@ -14,7 +14,7 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
         public AnalizationTask(
             ApplicationUser observer,
             ObservableUser observable,
-            User targetUser)
+            ObservableUser targetUser)
         {
             Observer = observer;
             Observable = observable;
@@ -26,7 +26,7 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
         public AnalizationTask(
             ApplicationUser observer,
             ObservableUser observable,
-            User targetUser,
+            ObservableUser targetUser,
             Task task,
             CancellationTokenSource cancellationTokenSource)
         {
@@ -40,7 +40,7 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
         public AnalizationTask(
             ApplicationUser observer,
             ObservableUser observable,
-            User targetUser,
+            ObservableUser targetUser,
             IEnumerable<Task> tasks,
             CancellationTokenSource cancellationTokenSource)
         {
@@ -54,7 +54,7 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
 
         public ApplicationUser Observer { get; private set; }
         public ObservableUser Observable { get; private set; }
-        public User TargetUser { get; private set; }
+        public ObservableUser TargetUser { get; private set; }
         public List<Task> Tasks { get; private set; }
         public CancellationTokenSource CancellationTokenSource { get; private set; }
 

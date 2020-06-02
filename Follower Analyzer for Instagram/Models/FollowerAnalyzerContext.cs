@@ -9,6 +9,7 @@ namespace Follower_Analyzer_for_Instagram.Models
 
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<ObservableUser> ObservableUsers { get; set; }
+        public DbSet<UserProfile> Profiles { get; set; }
         public DbSet<UserActivity> UserActivities { get; set; }
     }
 }

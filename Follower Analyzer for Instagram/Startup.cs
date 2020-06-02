@@ -15,13 +15,13 @@ namespace Follower_Analyzer_for_Instagram
 
         public void Configuration(IAppBuilder app)
         {
-            try
-            {
-                ActivityAnalizingCancellationTokenSource = new CancellationTokenSource();
-                ActivityAnalizer = new ActivityAnalizer(new FollowerAnalyzerRepository());
-                ActivityAnalizer.StartAnalizing(ActivityAnalizingCancellationTokenSource);
-            }
-            catch { }
+            //try
+            //{
+            //    ActivityAnalizingCancellationTokenSource = new CancellationTokenSource();
+            //    ActivityAnalizer = new ActivityAnalizer(new FollowerAnalyzerRepository());
+            //    ActivityAnalizer.StartAnalizing(ActivityAnalizingCancellationTokenSource);
+            //}
+            //catch { }
         }
     }
 }
