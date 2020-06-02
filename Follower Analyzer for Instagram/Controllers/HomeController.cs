@@ -292,7 +292,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
                 if (!currentSubscriptionsList.Contains(subscription))
                     subscriptionsStatistics.UnsubscribedSubscriptions.Add(subscription);
             }
-            // Get new followers
+            // Get new subscription
             foreach (var subscription in currentSubscriptionsList)
             {
                 if (!user.Subscriptions.Contains(subscription))
@@ -301,9 +301,18 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             //If there are changes, then save them in the database
             if (subscriptionsStatistics.NewSubscriptions.Count > 0 || subscriptionsStatistics.UnsubscribedSubscriptions.Count > 0)
             {
-                user.Subscriptions = currentSubscriptionsList;
+                user.Subscriptions.Clear();
+
+                foreach(var sub in currentSubscriptionsList)
+                {
+                    user.Subscriptions.Add(sub);
+                }
+
+                user.LastUpdateDate = DateTime.Now;
+
                 await _repository.UpdateAsync<ApplicationUser>(user);
             }
+
             return PartialView(subscriptionsStatistics);
         }
 
@@ -433,7 +442,7 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             return RedirectToAction("Index", new { status = "success" });
         }
 
-        public async Task<ActionResult> GetStatisticsByLikers(string userName, string sortType = "descending")
+        public async Task<ActionResult> GetStatisticsByLikers(string userName, string sortType = "ascending")
         {
             // Check the userName parameter. If it is empty, then set the name of the current user.
             if (String.IsNullOrEmpty(userName))
@@ -447,33 +456,45 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             foreach (var post in userPosts)
             {
                 if (Likers.Count == 0)
-                    foreach (var liker in post.Likers)
+                {
+                    foreach (var liker in post.Commenters)
+                    {
                         Likers.Add(liker, 1);
+                    }
+                }
 
-                foreach (var liker in post.Likers)
-                    if (Likers.ContainsKey(liker))
-                        Likers[liker]++;
-                    else
+                foreach (var liker in post.Commenters)
+                {
+                    var key = Likers.Where(c => c.Key.InstagramPK == liker.InstagramPK).FirstOrDefault();
+
+                    if (key.Equals(default(KeyValuePair<User, int>)))
+                    {
                         Likers.Add(liker, 1);
+                    }
+                    else
+                    {
+                        Likers[key.Key]++;
+                    }
+                }
             }
             // return a partial view with a sorted dictionary, depending on the parameter sortType
             if (sortType == "descending")
             {
                 if (Likers.Count != 0)
-                    return PartialView("_GetStatisticsByLikers", Likers.OrderBy(x => x.Value));
+                    return PartialView("_GetStatisticsByLikers", Likers.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value));
                 else
                     return PartialView("_GetStatisticsByLikers");
             }
             else
             {
                 if (Likers.Count != 0)
-                    return PartialView("_GetStatisticsByCommenters", Likers.OrderByDescending(x => x.Value));
+                    return PartialView("_GetStatisticsByLikers", Likers.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value));
                 else
-                    return PartialView("_GetStatisticsByCommenters");
+                    return PartialView("_GetStatisticsByLikers");
             }
         }
 
-        public async Task<ActionResult> GetStatisticsByCommenters(string userName, string sortType = "descending")
+        public async Task<ActionResult> GetStatisticsByCommenters(string userName, string sortType = "ascending")
         {
             // Check the userName parameter. If it is empty, then set the name of the current user.
             if (String.IsNullOrEmpty(userName))
@@ -487,27 +508,39 @@ namespace Follower_Analyzer_for_Instagram.Controllers
             foreach (var post in userPosts)
             {
                 if (Commenters.Count == 0)
+                {
                     foreach (var commenter in post.Commenters)
+                    {
                         Commenters.Add(commenter, 1);
+                    }    
+                }
 
                 foreach (var commenter in post.Commenters)
-                    if (Commenters.ContainsKey(commenter))
-                        Commenters[commenter]++;
-                    else
+                {
+                    var key = Commenters.Where(c => c.Key.InstagramPK == commenter.InstagramPK).FirstOrDefault();
+
+                    if (key.Equals(default(KeyValuePair<User, int>)))
+                    {
                         Commenters.Add(commenter, 1);
+                    } 
+                    else
+                    {
+                        Commenters[key.Key]++;
+                    }
+                }
             }
             // return a partial view with a sorted dictionary, depending on the parameter sortType
             if (sortType == "descending")
             {
                 if (Commenters.Count != 0)
-                    return PartialView("_GetStatisticsByLikers", Commenters.OrderBy(x => x.Value));
+                    return PartialView("_GetStatisticsByCommenters", Commenters.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value));
                 else
-                    return PartialView("_GetStatisticsByLikers");
+                    return PartialView("_GetStatisticsByCommenters");
             }
             else
             {
                 if (Commenters.Count != 0)
-                    return PartialView("_GetStatisticsByCommenters", Commenters.OrderByDescending(x => x.Value));
+                    return PartialView("_GetStatisticsByCommenters", Commenters.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value));
                 else
                     return PartialView("_GetStatisticsByCommenters");
             }

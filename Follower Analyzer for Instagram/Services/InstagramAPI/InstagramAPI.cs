@@ -401,13 +401,20 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
             return posts;
         }
 
-        private List<User> GetPostCommenters(InstaMedia media)
+        private List<ObservableUser> GetPostCommenters(InstaMedia media)
         {
-            var commenters = new List<User>();
+            var commenters = new List<ObservableUser>();
 
-            foreach (var comment in media.PreviewComments)
+            Task<IResult<InstaCommentList>> commentsListTask =
+                Task.Run(() => 
+                _instaApi.CommentProcessor.GetMediaCommentsAsync(media.Pk, PaginationParameters.MaxPagesToLoad(MAX_PAGES_TO_LOAD)));
+            commentsListTask.Wait();
+
+            IResult<InstaCommentList> commentsList = commentsListTask.Result;
+       
+            foreach (var comment in commentsList.Value.Comments)
             {
-                var newUser = new User();
+                var newUser = new ObservableUser();
                 newUser.InstagramPK = comment.User.Pk.ToString();
                 newUser.Username = comment.User.UserName;
                 commenters.Add(newUser);
@@ -416,13 +423,20 @@ namespace Follower_Analyzer_for_Instagram.Services.InstagramAPI
             return commenters;
         }
 
-        private List<User> GetPostLikers(InstaMedia media)
+        private List<ObservableUser> GetPostLikers(InstaMedia media)
         {
-            var likers = new List<User>();
+            var likers = new List<ObservableUser>();
 
-            foreach(var liker in media.Likers)
+            Task<IResult<InstaLikersList>> likersListTask =
+                Task.Run(() =>
+                _instaApi.MediaProcessor.GetMediaLikersAsync(media.Pk));
+            likersListTask.Wait();
+
+            IResult<InstaLikersList> likersList = likersListTask.Result;
+
+            foreach (var liker in likersList.Value)
             {
-                var newUser = new User();
+                var newUser = new ObservableUser();
                 newUser.InstagramPK = liker.Pk.ToString();
                 newUser.Username = liker.UserName;
                 likers.Add(newUser);

@@ -12,7 +12,7 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
     public class ActivityAnalizer : IActivityAnalizer, IDisposable
     {
         private IRepository _repository;
-        private List<AnalizationTask> _tasks; 
+        private List<AnalizationTask> _tasks;
 
         private event EventHandler<UserActivity> _postIsLiked;
         private event EventHandler<UserActivity> _commentCreated;
@@ -35,12 +35,18 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
 
         public void Dispose()
         {
-            foreach(var analizationTask in _tasks)
+            foreach (var analizationTask in _tasks)
             {
                 analizationTask.CancellationTokenSource.Cancel();
 
+                IInstagramAPI instagramAPI = new InstagramAPI.InstagramAPI();
+                instagramAPI.SetCookies(analizationTask.Observer.StateData);
+
                 foreach (var task in analizationTask.Tasks)
                 {
+                    SaveProfileStateAsync(
+                        analizationTask.TargetUser,
+                        instagramAPI.GetUserPostsByPrimaryKey(analizationTask.TargetUser.InstagramPK));
                     task.Wait(TASK_WAITING_TIMEOUT);
                 }
             }
@@ -59,7 +65,7 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
 
             foreach (var observer in observers)
             {
-                foreach(var observable in observer.ObservableAccounts)
+                foreach (var observable in observer.ObservableAccounts)
                 {
                     StartLikesAnalizingAsync(observer, observable);
                     StartCommentsAnalizingAsync(observer, observable);
@@ -68,9 +74,9 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
         }
 
         private void TryAddToTasks(
-            ApplicationUser observer, 
+            ApplicationUser observer,
             ObservableUser observable,
-            User targetUser,
+            ObservableUser targetUser,
             Task task,
             CancellationTokenSource cancellationTokenSource)
         {
@@ -78,9 +84,9 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
                 at.Observable.Equals(observable) &&
                 at.TargetUser.Equals(targetUser)).FirstOrDefault();
 
-            if(analizationTask == null) // Task not created yet.
+            if (analizationTask == null) // Task not created yet.
             {
-                var newAnalizationTask = 
+                var newAnalizationTask =
                     new AnalizationTask(observer, observable, targetUser, task, cancellationTokenSource);
                 _tasks.Add(newAnalizationTask);
             }
@@ -106,22 +112,24 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
         }
 
         private async Task StartCommentsAnalizingAsync(
-            ApplicationUser observer, ObservableUser observable, User targetUser)
+            ApplicationUser observer, ObservableUser observable, ObservableUser targetUser)
         {
             IInstagramAPI instagramAPI = new InstagramAPI.InstagramAPI();
             instagramAPI.SetCookies(observer.StateData);
 
             List<InstagramPost> posts =
-                    instagramAPI.GetUserPostsByPrimaryKey(targetUser.InstagramPK);
+                    await GetProfileStateAsync(instagramAPI, targetUser);
 
             var cancellationTokenSource = new CancellationTokenSource();
 
             Task commentsAnalizingTask = Task.Run(
             () =>
             {
+                List<InstagramPost> newPostsState = new List<InstagramPost>();
+
                 do
                 {
-                    List<InstagramPost> newPostsState =
+                    newPostsState =
                     instagramAPI.GetUserPostsByPrimaryKey(targetUser.InstagramPK);
 
                     if (AreDifferencesPresent(posts, newPostsState))
@@ -145,6 +153,8 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
                         break;
                     }
                 } while (!cancellationTokenSource.Token.IsCancellationRequested);
+
+                SaveProfileStateAsync(targetUser, newPostsState);
             });
 
             TryAddToTasks(observer, observable, targetUser, commentsAnalizingTask, cancellationTokenSource);
@@ -154,9 +164,9 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
         {
             int delay = 500;
 
-            for(int i = 0; i <= timeout.Ticks; i++)
+            for (int i = 0; i <= timeout.Ticks; i++)
             {
-                if(cancellationToken.IsCancellationRequested)
+                if (cancellationToken.IsCancellationRequested)
                 {
                     throw new OperationCanceledException();
                 }
@@ -165,9 +175,48 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
             }
         }
 
+        private async Task<List<InstagramPost>> GetProfileStateAsync(IInstagramAPI instagramAPI, User profileOwner)
+        {
+            List<InstagramPost> posts = null;
+
+            var profile = await _repository.GetAsync<UserProfile>(p => p.Owner.Equals(profileOwner));
+
+            if (profile != null) // Profile state already exists in DB.
+            {
+                posts = profile.Posts;
+            }
+            else // We have to parse it from Instagram.
+            {
+                posts = instagramAPI.GetUserPostsByPrimaryKey(profileOwner.InstagramPK);
+            }
+
+            return posts;
+        }
+
+        private async Task SaveProfileStateAsync(ObservableUser profileOwner, List<InstagramPost> posts)
+        {
+            var profile = await _repository.GetAsync<UserProfile>(p => p.Owner.Equals(profileOwner));
+
+            if (profile != null) // Profile state already exists in DB.
+            {
+                posts = profile.Posts;
+                _repository.UpdateAsync(profile);
+            }
+            else // We have to create new record in DB.
+            {
+                profile = new UserProfile
+                {
+                    Owner = profileOwner,
+                    Posts = posts
+                };
+
+                _repository.CreateAsync(profile);
+            }
+        }
+
         private void CheckForUserComment(ApplicationUser observer, ObservableUser observable, User postOwner, InstagramPost firstPostState, InstagramPost secondPostState)
         {
-            if(!firstPostState.Commenters.Contains(observable) 
+            if (!firstPostState.Commenters.Contains(observable)
                 && secondPostState.Commenters.Contains(observable))
             {
                 var activity = new UserActivity();
@@ -209,7 +258,7 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
                 {
                     var newPosts = newPostsState.Except(posts).ToList();
 
-                    foreach(var newPost in newPosts)
+                    foreach (var newPost in newPosts)
                     {
                         distinctivePosts.Add(new InstagramPost(), newPost);
                     }
@@ -239,15 +288,15 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
 
             do
             {
-                if(posts.Count != newPostsState.Count)
+                if (posts.Count != newPostsState.Count)
                 {
                     areDifferences = true;
                     break;
                 }
 
-                for(int i = 0; i < posts.Count; i++)
+                for (int i = 0; i < posts.Count; i++)
                 {
-                    if(posts[i].CountOfLikes != newPostsState[i].CountOfLikes)
+                    if (posts[i].CountOfLikes != newPostsState[i].CountOfLikes)
                     {
                         areDifferences = true;
                         break;
@@ -267,29 +316,31 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
         private async Task StartLikesAnalizingAsync(
             ApplicationUser observer, ObservableUser observable)
         {
-            foreach(var targetUser in observable.ObservableUsers)
+            foreach (var targetUser in observable.ObservableUsers)
             {
                 StartLikesAnalizingAsync(observer, observable, targetUser);
             }
         }
 
         private async Task StartLikesAnalizingAsync(
-            ApplicationUser observer, ObservableUser observable, User targetUser)
+            ApplicationUser observer, ObservableUser observable, ObservableUser targetUser)
         {
             IInstagramAPI instagramAPI = new InstagramAPI.InstagramAPI();
             instagramAPI.SetCookies(observer.StateData);
 
             List<InstagramPost> posts =
-                    instagramAPI.GetUserPostsByPrimaryKey(targetUser.InstagramPK);
+                    await GetProfileStateAsync(instagramAPI, targetUser);
 
             var cancellationTokenSource = new CancellationTokenSource();
 
             Task likesAnalizingTask = Task.Run(
             () =>
             {
+                List<InstagramPost> newPostsState = new List<InstagramPost>();
+
                 do
                 {
-                    List<InstagramPost> newPostsState =
+                    newPostsState =
                     instagramAPI.GetUserPostsByPrimaryKey(targetUser.InstagramPK);
 
                     if (AreDifferencesPresent(posts, newPostsState))
@@ -313,6 +364,8 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
                         break;
                     }
                 } while (!cancellationTokenSource.Token.IsCancellationRequested);
+
+                SaveProfileStateAsync(targetUser, newPostsState);
             });
 
             TryAddToTasks(observer, observable, targetUser, likesAnalizingTask, cancellationTokenSource);
@@ -324,19 +377,19 @@ namespace Follower_Analyzer_for_Instagram.Services.ActivityAnalizer
             var observableTasks = _tasks.Where(at => at.Observer.Equals(observer) &&
                 at.Observable.Equals(observable)).ToList();
 
-            if(observableTasks.Count == 0) // User is not under observation yet.
+            if (observableTasks.Count == 0) // User is not under observation yet.
             {
-                return; 
+                return;
             }
 
-            foreach(var aTask in observableTasks)
+            foreach (var aTask in observableTasks)
             {
                 aTask.CancellationTokenSource.Cancel();
             }
 
             foreach (var aTask in observableTasks)
             {
-                foreach(var task in aTask.Tasks)
+                foreach (var task in aTask.Tasks)
                 {
                     task.Wait();
                 }

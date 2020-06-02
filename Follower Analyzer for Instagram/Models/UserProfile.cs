@@ -8,9 +8,8 @@ namespace Follower_Analyzer_for_Instagram.Models
 {
     public class UserProfile
     {
-        [Key]
         public int Id { get; set; }
-        public User Owner { get; set; }
+        public ObservableUser Owner { get; set; }
         public List<InstagramPost> Posts { get; set; }
     }
 }
